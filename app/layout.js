@@ -2,6 +2,7 @@ import './globals.css';
 import { Inter, Playfair_Display } from 'next/font/google';
 import AppLayoutWrapper from '@/components/AppLayoutWrapper';
 import AIChatWidget from '@/components/AIChatWidget';
+import InstallPWA from '@/components/InstallPWA';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -16,9 +17,17 @@ const playfair = Playfair_Display({
 });
 
 export const metadata = {
+  applicationName: 'Torcia School',
   title: 'The Torcia School | Growing Future Leaders in Karachi',
   description: 'Admissions open from Playgroup to Class V. The Torcia School in Nazimabad offers quality education in a disciplined, values-based environment.',
   keywords: ['The Torcia School', 'Best school in Nazimabad', 'Primary school Karachi', 'Montessori admissions', 'Top school near Abbasi Shaheed Hospital'],
+  manifest: '/manifest.json',
+  themeColor: '#991b1b',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Torcia School',
+  },
   openGraph: {
     title: 'The Torcia School | Admissions Open',
     description: 'Nurturing curiosity, strong moral values, and academic excellence. Book a campus tour today.',
@@ -79,6 +88,14 @@ const schoolJsonLd = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <head>
+        <meta name="application-name" content="Torcia School" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Torcia School" />
+        <meta name="theme-color" content="#991b1b" />
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className={`${inter.className} min-h-screen text-gray-900`}>
         {/* Local School JSON-LD Schema for Google Search & Knowledge Panel */}
         <script
@@ -89,6 +106,7 @@ export default function RootLayout({ children }) {
         <div className="fixed inset-0 -z-15 bg-white/85"></div>
         <div className="relative z-10">
           <AppLayoutWrapper>{children}</AppLayoutWrapper>
+          <InstallPWA />
           <AIChatWidget />
         </div>
       </body>
