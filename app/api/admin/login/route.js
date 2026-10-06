@@ -6,8 +6,15 @@ export const dynamic = 'force-dynamic';
 export async function POST(request) {
   try {
     const { password } = await request.json();
+    const expectedSecret = process.env.ADMIN_SECRET;
 
-    const expectedSecret = process.env.ADMIN_SECRET || 'torcia_secure_admin_secret_key_2026';
+    // Fail closed if the production/admin secret has not been configured.
+    if (!expectedSecret) {
+      return NextResponse.json(
+        { success: false, error: 'Admin authentication is not configured.' },
+        { status: 503 }
+      );
+    }
 
     if (!password || password !== expectedSecret) {
       return NextResponse.json(
@@ -27,7 +34,7 @@ export async function POST(request) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return response;
