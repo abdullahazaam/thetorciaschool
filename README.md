@@ -1,96 +1,130 @@
-# The Torcia School - Official Web Portal & Admin Dashboard
+# The Torcia School
 
-> **"Growing Future Leaders"**
+> **Growing Future Leaders**
 
-The Torcia School is a values-driven educational institution offering comprehensive education from **Playgroup to Class V** in Nazimabad, Karachi.
+A premium, responsive school web portal for **The Torcia School, Nazimabad, Karachi**. The project combines a polished public-facing experience with a protected admin dashboard for managing admissions, inquiries, news, and media.
 
----
+## ✨ Highlights
 
-## 🏛️ School Details
-- **School Name**: The Torcia School
-- **Tagline**: Growing Future Leaders
-- **Classes**: Playgroup to Class V
-- **Mission**: To provide quality education in a disciplined, values-based environment that nurtures knowledge, character, and social responsibilities.
-- **Vision**: To build an educated and morally strong youth for the betterment of society and the revival of Islam.
-- **Address**: Plot # 20/13 block 5C near Abbasi Shaheed Hospital, Nazimabad Karachi
-- **Phone**: 0342-2049976
-- **Email**: thetorciaschool@gmail.com
-- **School Timings**:
-  - Monday – Saturday: 7:45 am to 2:00 pm
-  - Friday: 7:45 am to 1:00 pm
+- Cinematic, responsive school website experience
+- Admissions and contact inquiry forms
+- MongoDB-backed content and inquiry management
+- Protected admin dashboard with HTTP-only session cookies
+- News and events management
+- Cloudinary media upload integration
+- Transactional email notifications with Nodemailer
+- SEO-ready metadata, sitemap, and robots configuration
+- PWA support
+- Security-focused HTTP response headers and Content Security Policy
+- Mobile-first layouts and accessible navigation
 
----
+## 🧰 Tech Stack
 
-## 🔒 Security & Admin Authentication
-- **Admin Login Route**: `/admin/login`
-- **Protection**: Root Next.js [`middleware.js`](middleware.js) intercepts all `/admin/*` routes.
-- **Session**: Managed via secure, HTTP-only `torcia_admin_session` cookie verified using Web Crypto SHA-256 tokens.
-- **Secret Key**: `ADMIN_SECRET` in `.env.local`.
-
----
-
-## 🛠️ Tech Stack
-- **Framework**: Next.js 14+ (App Router)
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Database**: MongoDB Atlas via Mongoose with cached connection handling
-- **Media Storage**: Cloudinary SDK (Direct upload integration)
-- **Security**: Next.js Edge Middleware with HTTP-only cookie sessions
-
----
+| Area | Technology |
+| --- | --- |
+| Framework | Next.js 14 (App Router) |
+| Frontend | React 18 |
+| Styling | Tailwind CSS |
+| Animation | Framer Motion |
+| Icons | Lucide React |
+| Database | MongoDB Atlas + Mongoose |
+| Media | Cloudinary |
+| Email | Nodemailer / SMTP |
+| PWA | next-pwa |
+| Authentication | HTTP-only cookies + Web Crypto SHA-256 |
+| Deployment | Compatible with Vercel and other Node.js hosts |
 
 ## 📁 Project Structure
+
 ```text
-the-torcia-school/
-├── app/
-│   ├── layout.js                 # Global Root Layout
-│   ├── globals.css               # Tailwind directives & base styles
-│   ├── page.js                   # Cinematic Home Page (Hero, 7 Values, Gallery)
-│   ├── about/page.js             # Mission, Vision, Campus Building & Gallery
-│   ├── academics/page.js         # Playgroup to Class V Grid & Faculty Standards
-│   ├── admissions/page.js        # Admission Info & Interactive Inquiry Form
-│   ├── contact/page.js           # Campus Details, Timings & Contact Form
-│   ├── news/page.js              # Dynamic News & Events from MongoDB
-│   ├── admin/
-│   │   ├── layout.js             # Admin Layout
-│   │   ├── AdminLayoutClient.js  # Dedicated dark dashboard layout with topbar & logout
-│   │   ├── page.js               # Admin Metrics & Overview
-│   │   ├── login/page.js         # Admin Authentication Portal (Protected by Suspense)
-│   │   └── news/page.js          # News & Events CRUD with Cloudinary Uploads
-│   └── api/
-│       ├── admin/
-│       │   ├── login/route.js    # Sets HTTP-only auth cookie with ADMIN_SECRET
-│       │   └── logout/route.js   # Clears session cookie
-│       ├── news/route.js         # MongoDB News & Events API
-│       ├── upload/route.js       # Cloudinary Media Upload API
-│       └── inquiries/route.js    # Admissions & Contact Inquiries API
-├── components/
-│   ├── AppLayoutWrapper.js       # Cleanly separates public site from admin dashboard
-│   ├── Navbar.js                 # Responsive Top Bar & Navigation with school emblem
-│   ├── Footer.js                 # School Footer with Hours, Vision & Contact
-│   ├── AdminSidebar.js           # Admin Dashboard Navigation Sidebar
-│   └── GalleryGrid.js            # Responsive Campus Photo Gallery
-├── lib/
-│   ├── auth.js                   # Web Crypto SHA-256 session token hashing & verification
-│   ├── schoolImages.js           # Semantic image registry mapping public/images
-│   ├── mongodb.js                # Cached Mongoose Connection for Serverless
-│   └── cloudinary.js             # Cloudinary Media Configuration
-├── models/
-│   ├── News.js                   # Mongoose Schema for News/Events
-│   └── Inquiry.js                # Mongoose Schema for Inquiries
-├── middleware.js                 # Root Next.js Edge Middleware protecting /admin
-├── .env.local                    # Local Environment Variables
-├── .env.local.example            # Environment Variables Template
-├── tailwind.config.js            # Tailored Torcia School Navy/Gold/Emerald theme
-└── package.json
+app/
+├── about/                 # School story, mission and vision
+├── academics/             # Academic programs and grade information
+├── admissions/            # Admission information and inquiry flow
+├── contact/               # Contact information and contact form
+├── news/                  # Public news and events
+├── admin/                 # Protected administration dashboard
+└── api/                   # Server-side API routes
+    ├── admin/             # Admin authentication
+    ├── admissions/        # Admission submissions
+    ├── contact/           # Contact submissions
+    ├── inquiries/         # Inquiry management
+    ├── news/              # News management
+    └── upload/            # Cloudinary uploads
+
+components/                # Reusable UI components
+lib/                       # Database, auth, mailer and Cloudinary helpers
+models/                    # Mongoose schemas
+public/                    # Static assets
+middleware.js              # Admin route protection
+next.config.js             # Next.js, PWA and security configuration
+.env.local.example         # Safe environment-variable template
 ```
 
----
+## 🚀 Getting Started
 
-## 🚀 Running the App
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure environment variables
+
+Copy the example file:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Then replace every placeholder with real credentials.
+
+**Never commit `.env.local` or real credentials.** The repository's `.gitignore` already excludes local environment files.
+
+### 3. Start development
+
 ```bash
 npm run dev
 ```
 
-- Public School Portal: [http://localhost:3000](http://localhost:3000)
-- Protected Admin Portal: [http://localhost:3000/admin](http://localhost:3000/admin) *(Automatically redirects to `/admin/login` if unauthenticated)*
+Open [http://localhost:3000](http://localhost:3000).
+
+### 4. Production build
+
+```bash
+npm run build
+npm start
+```
+
+## 🔐 Security Notes
+
+- Real MongoDB, Cloudinary, SMTP, and admin secrets belong only in environment variables.
+- Admin authentication fails closed when `ADMIN_SECRET` is missing.
+- Admin sessions use an HTTP-only cookie.
+- The repository contains an environment template only; it must never contain production credentials.
+- Keep deployment secrets configured in the hosting provider's environment settings.
+- Do not commit `.env.local`, private keys, exported database files, or credential dumps.
+
+## 🌐 Main Routes
+
+- Public website: `/`
+- About: `/about`
+- Academics: `/academics`
+- Admissions: `/admissions`
+- News: `/news`
+- Contact: `/contact`
+- Admin: `/admin`
+- Admin login: `/admin/login`
+
+## 🏫 School Information
+
+**The Torcia School**  
+Nazimabad, Karachi, Pakistan  
+**Tagline:** Growing Future Leaders  
+**Classes:** Playgroup to Class V
+
+## 👨‍💻 Project
+
+Built and maintained by **Abdullah Azaam**.
+
+This repository is a portfolio-quality full-stack web project demonstrating modern Next.js development, responsive UI implementation, server-side APIs, database integration, media management, authentication, email workflows, and production-oriented security practices.
