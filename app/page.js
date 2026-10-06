@@ -9,12 +9,49 @@ import {
   Brain,
   ArrowRight,
   Quote,
+  Calendar,
+  Newspaper,
 } from 'lucide-react';
 import HeroSlider from '@/components/HeroSlider';
 import GalleryGrid from '@/components/GalleryGrid';
 import AdmissionsPromo from '@/components/AdmissionsPromo';
 import MotionCard from '@/components/MotionCard';
 import { aboutImages } from '@/lib/schoolImages';
+import connectToDatabase from '@/lib/mongodb';
+import Event from '@/models/Event';
+import News from '@/models/News';
+
+export const dynamic = 'force-dynamic';
+
+async function getFeaturedEvents() {
+  try {
+    if (process.env.MONGODB_URI) {
+      await connectToDatabase();
+      const events = await Event.find({ isActive: true }).sort({ date: -1 }).limit(3).lean();
+      if (events && events.length > 0) {
+        return JSON.parse(JSON.stringify(events));
+      }
+      const news = await News.find({}).sort({ createdAt: -1 }).limit(3).lean();
+      if (news && news.length > 0) {
+        return JSON.parse(
+          JSON.stringify(
+            news.map((n) => ({
+              _id: n._id.toString(),
+              title: n.title,
+              description: n.excerpt || n.content,
+              type: 'news',
+              date: n.eventDate || n.createdAt,
+              imageUrl: n.imageUrl,
+            }))
+          )
+        );
+      }
+    }
+  } catch (e) {
+    console.error('Error fetching home events:', e);
+  }
+  return [];
+}
 
 // The 6 Core Values
 const coreValuesList = [
@@ -86,7 +123,9 @@ const progressionTiers = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const events = await getFeaturedEvents();
+
   return (
     <div className="relative z-10 w-full bg-transparent">
       <script
@@ -353,6 +392,96 @@ export default function HomePage() {
               </div>
             </div>
           </MotionCard>
+        </div>
+      </section>
+
+      {/* 5.3. Dynamic Campus News & Upcoming Events */}
+      <section className="bg-transparent py-12 lg:py-16 border-b border-red-100/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 text-left">
+            <div className="max-w-2xl">
+              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1.5">
+                CAMPUS PULSE &amp; UPDATES
+              </span>
+              <h2 className="text-3xl md:text-4xl lg:text-[40px] font-extrabold text-gray-900 tracking-tight leading-tight">
+                Latest News &amp; Events
+              </h2>
+              <div className="w-14 h-1 bg-[#A01A22] rounded-full my-3"></div>
+              <p className="text-gray-900 text-sm sm:text-base leading-relaxed">
+                Stay connected with the latest celebrations, competitions, workshops, and milestones at The Torcia School.
+              </p>
+            </div>
+
+            <Link
+              href="/news"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold text-[#A01A22] hover:text-[#87131A] active:scale-95 transition-all duration-300 hover:shadow-[0_10px_20px_rgba(220,38,38,0.2)] hover:-translate-y-1 self-start md:self-end"
+            >
+              <span>View All News &amp; Events</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {events.length === 0 ? (
+            <div className="bg-white/95 backdrop-blur-xl border border-dashed border-red-200 rounded-2xl p-8 sm:p-12 text-center text-gray-500 shadow-md max-w-lg mx-auto space-y-3">
+              <div className="w-12 h-12 rounded-full bg-red-50 text-[#A01A22] flex items-center justify-center mx-auto">
+                <Newspaper className="w-6 h-6" />
+              </div>
+              <h3 className="font-bold text-gray-900 text-base">New updates coming soon</h3>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Our campus calendar and announcement desk are currently being scheduled. Check back soon for fresh updates!
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-stretch">
+              {events.map((evt, idx) => (
+                <MotionCard key={evt._id} index={idx} className="h-full">
+                  <Link
+                    href={`/news/${evt._id}`}
+                    className="group cursor-pointer transition-all duration-300 hover:-translate-y-2 bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl overflow-hidden flex flex-col h-full"
+                  >
+                    <div className="relative w-full aspect-video overflow-hidden bg-red-50">
+                      {evt.imageUrl ? (
+                        <Image
+                          src={evt.imageUrl}
+                          alt={evt.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[#A01A22]">
+                          <Newspaper className="w-10 h-10" />
+                        </div>
+                      )}
+                      <span className="absolute bottom-2 left-2 bg-[#A01A22] text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow uppercase tracking-wider">
+                        {evt.type || 'News'}
+                      </span>
+                    </div>
+
+                    <div className="p-4 sm:p-6 flex-1 flex flex-col justify-between space-y-3">
+                      <div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-gray-500 mb-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                          <span>{new Date(evt.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        </div>
+                        <h3 className="font-bold text-sm sm:text-base text-gray-900 tracking-tight group-hover:text-[#A01A22] transition-colors line-clamp-2">
+                          {evt.title}
+                        </h3>
+                        <p className="text-xs text-gray-600 line-clamp-2 mt-1 font-normal">
+                          {evt.description}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-gray-100 flex items-center text-xs font-bold text-[#A01A22]">
+                        <span>Read details</span>
+                        <ArrowRight className="w-3.5 h-3.5 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                </MotionCard>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

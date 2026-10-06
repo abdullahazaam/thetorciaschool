@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar as CalendarIcon,
@@ -71,6 +71,38 @@ export default function EventCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date(2026, 9, 1)); // October 2026
   const [activeEventId, setActiveEventId] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(SAMPLE_EVENTS[0]);
+  const [liveEvents, setLiveEvents] = useState([]);
+
+  useEffect(() => {
+    async function fetchCalendarEvents() {
+      try {
+        const res = await fetch('/api/events');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data && Array.isArray(json.data)) {
+            const mapped = json.data.map((evt) => {
+              const d = new Date(evt.date);
+              return {
+                id: evt._id,
+                year: d.getFullYear(),
+                month: d.getMonth(),
+                day: d.getDate(),
+                title: evt.title,
+                category: evt.type === 'event' ? 'Campus Event' : 'Campus News',
+                time: 'Scheduled Event',
+                location: 'Torcia Campus',
+                description: evt.description,
+              };
+            });
+            setLiveEvents(mapped);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load events for calendar:', err);
+      }
+    }
+    fetchCalendarEvents();
+  }, []);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -100,25 +132,28 @@ export default function EventCalendar() {
     setActiveEventId(null);
   };
 
-  // Only show sample events in the active school month (October 2026) or allow preview
+  // Merge live events for current month with sample events if target month
+  const currentMonthLive = liveEvents.filter((e) => e.year === year && e.month === month);
   const isTargetMonth = month === 9 && year === 2026;
-  const monthEvents = isTargetMonth ? SAMPLE_EVENTS : [];
+  const monthEvents = isTargetMonth
+    ? [...SAMPLE_EVENTS, ...currentMonthLive.filter((e) => !SAMPLE_EVENTS.some((s) => s.day === e.day))]
+    : currentMonthLive;
 
   return (
-    <div className="w-full bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl p-6 sm:p-8 lg:p-10 transition-all duration-300">
+    <div className="w-full bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.25)] rounded-2xl p-4 sm:p-5 lg:p-6 transition-all duration-300">
       {/* Calendar Header Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-gray-100">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 sm:pb-4 border-b border-gray-100">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#A01A22] animate-pulse"></span>
-            <span className="text-xs font-bold uppercase tracking-wider text-[#A01A22]">
+            <span className="w-2 h-2 rounded-full bg-[#A01A22] animate-pulse"></span>
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#A01A22]">
               Campus Event Schedule
             </span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 tracking-tight mt-1">
+          <h3 className="text-xl sm:text-2xl font-extrabold font-serif text-gray-900 tracking-tight mt-0.5">
             {monthNames[month]} {year}
           </h3>
-          <p className="text-xs text-gray-500 font-medium mt-0.5">
+          <p className="text-[11px] sm:text-xs text-gray-500 font-medium mt-0.5">
             Hover over or click highlighted dates to view scheduled campus activities.
           </p>
         </div>
@@ -128,37 +163,37 @@ export default function EventCalendar() {
           <button
             type="button"
             onClick={handleResetToday}
-            className="px-3.5 py-1.5 rounded-full text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all"
+            className="px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all"
           >
             Current Term
           </button>
-          <div className="flex items-center bg-gray-100 rounded-full p-1 border border-gray-200">
+          <div className="flex items-center bg-gray-100 rounded-full p-0.5 border border-gray-200">
             <button
               type="button"
               onClick={handlePrevMonth}
               aria-label="Previous Month"
-              className="p-1.5 rounded-full text-gray-700 hover:bg-white hover:text-red-700 transition shadow-sm active:scale-90"
+              className="p-1 rounded-full text-gray-700 hover:bg-white hover:text-red-700 transition shadow-sm active:scale-90"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
               onClick={handleNextMonth}
               aria-label="Next Month"
-              className="p-1.5 rounded-full text-gray-700 hover:bg-white hover:text-red-700 transition shadow-sm active:scale-90"
+              className="p-1 rounded-full text-gray-700 hover:bg-white hover:text-red-700 transition shadow-sm active:scale-90"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
       </div>
 
       {/* Days of Week Header */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-3 py-4 text-center">
+      <div className="grid grid-cols-7 gap-2 sm:gap-2.5 md:gap-3 py-2 text-center">
         {DAYS_OF_WEEK.map((d, i) => (
           <div
             key={d}
-            className={`text-xs font-bold uppercase tracking-wider ${
+            className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider ${
               i === 0 || i === 5 ? 'text-red-700 font-extrabold' : 'text-gray-500'
             }`}
           >
@@ -168,16 +203,16 @@ export default function EventCalendar() {
       </div>
 
       {/* Monthly Dates Grid */}
-      <div className="grid grid-cols-7 gap-1.5 sm:gap-3">
+      <div className="grid grid-cols-7 gap-2 sm:gap-2.5 md:gap-3">
         {/* Previous Month Padding Days */}
         {Array.from({ length: firstDayIndex }).map((_, idx) => {
           const dayNum = prevMonthDays - firstDayIndex + idx + 1;
           return (
             <div
               key={`prev-${idx}`}
-              className="aspect-square sm:aspect-[4/3] rounded-2xl p-1.5 sm:p-2.5 bg-gray-50/30 border border-transparent text-gray-300 text-xs flex flex-col justify-start items-center sm:items-start select-none opacity-40 pointer-events-none"
+              className="min-h-[85px] sm:min-h-[90px] p-2.5 flex flex-col gap-1.5 rounded-xl bg-gray-100/50 text-gray-400 border border-gray-200 select-none opacity-60 pointer-events-none"
             >
-              <span>{dayNum}</span>
+              <span className="text-xs sm:text-sm font-semibold">{dayNum}</span>
             </div>
           );
         })}
@@ -204,8 +239,8 @@ export default function EventCalendar() {
           const rowIndex = Math.floor((firstDayIndex + idx) / 7);
           const isTopRow = rowIndex <= 0;
           const popoverVerticalClass = isTopRow
-            ? 'top-full mt-2.5'
-            : 'bottom-full mb-2.5';
+            ? 'top-full mt-2'
+            : 'bottom-full mb-2';
 
           return (
             <div
@@ -222,22 +257,24 @@ export default function EventCalendar() {
                     setActiveEventId(event.id);
                   }
                 }}
-                className={`w-full aspect-square sm:aspect-[4/3] rounded-2xl p-1.5 sm:p-2.5 flex flex-col justify-between items-center sm:items-start transition-all duration-300 text-left ${
+                className={`w-full min-h-[85px] sm:min-h-[90px] p-2.5 flex flex-col gap-1.5 justify-between text-left transition-all duration-200 ${
                   hasEvent
-                    ? 'bg-red-50/80 hover:bg-red-100/90 border border-red-200 hover:border-red-400 cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-0.5'
-                    : 'bg-gray-50/40 hover:bg-gray-100/60 border border-gray-100 text-gray-700'
-                } ${isSelected ? 'ring-2 ring-[#A01A22] bg-red-100/80 shadow-md' : ''}`}
+                    ? `border-2 border-red-500 bg-red-50 rounded-xl shadow-md hover:shadow-lg hover:border-red-600 ${
+                        isSelected ? 'ring-2 ring-red-700' : ''
+                      }`
+                    : 'border border-gray-300 bg-white rounded-xl shadow-sm hover:shadow-md hover:border-red-300 hover:bg-gray-50'
+                }`}
               >
                 <div className="flex items-center justify-between w-full">
                   <span
                     className={`text-xs sm:text-sm font-semibold ${
-                      hasEvent ? 'text-[#A01A22] font-bold' : 'text-gray-700'
+                      hasEvent ? 'text-red-700 font-bold' : 'text-gray-700'
                     }`}
                   >
                     {day}
                   </span>
                   {hasEvent && (
-                    <span className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#A01A22] text-white">
+                    <span className="hidden sm:inline-block bg-red-600 text-white px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider inline-block w-max shadow-sm leading-tight">
                       Event
                     </span>
                   )}
@@ -245,14 +282,14 @@ export default function EventCalendar() {
 
                 {/* Event Indicator Dot / Preview */}
                 {hasEvent ? (
-                  <div className="w-full flex items-center justify-center sm:justify-start gap-1">
-                    <span className="w-2 h-2 rounded-full bg-[#A01A22] shadow-[0_0_8px_rgba(160,26,34,0.6)] animate-pulse" />
-                    <span className="hidden sm:inline-block text-[11px] font-medium text-gray-800 truncate max-w-[85%]">
+                  <div className="w-full mt-1 flex items-center min-w-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-600 inline-block mr-1 shrink-0" />
+                    <span className="text-xs font-semibold text-red-950 truncate leading-tight">
                       {event.title}
                     </span>
                   </div>
                 ) : (
-                  <div className="h-2" />
+                  <div className="h-1" />
                 )}
               </button>
 
@@ -264,34 +301,34 @@ export default function EventCalendar() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: isTopRow ? -6 : 6, scale: 0.95 }}
                     transition={{ duration: 0.18, ease: 'easeOut' }}
-                    className={`absolute ${popoverVerticalClass} ${popoverPositionClass} w-72 sm:w-80 bg-white/95 backdrop-blur-xl shadow-2xl border border-gray-100 rounded-lg p-4 z-50 text-left pointer-events-none`}
+                    className={`absolute ${popoverVerticalClass} ${popoverPositionClass} w-72 sm:w-80 bg-white/95 backdrop-blur-xl shadow-2xl border border-gray-100 rounded-lg p-3 sm:p-4 z-50 text-left pointer-events-none`}
                   >
-                    <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-gray-100">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-red-100 text-red-800">
+                    <div className="flex items-center justify-between gap-2 mb-1.5 pb-1.5 border-b border-gray-100">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-wide uppercase bg-red-100 text-red-800">
                         <Sparkles className="w-3 h-3 text-[#A01A22]" />
                         {event.category}
                       </span>
-                      <span className="text-xs font-extrabold text-[#A01A22]">
+                      <span className="text-[11px] sm:text-xs font-extrabold text-[#A01A22]">
                         {monthNames[month].slice(0, 3)} {day}, {year}
                       </span>
                     </div>
 
-                    <h4 className="text-sm font-bold font-serif text-gray-900 leading-snug mb-1.5">
+                    <h4 className="text-xs sm:text-sm font-bold font-serif text-gray-900 leading-snug mb-1">
                       {event.title}
                     </h4>
 
-                    <div className="space-y-1 mb-2.5 text-xs text-gray-600">
+                    <div className="space-y-0.5 mb-2 text-[11px] sm:text-xs text-gray-600">
                       <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-[#A01A22] shrink-0" />
+                        <Clock className="w-3 h-3 text-[#A01A22] shrink-0" />
                         <span className="font-semibold text-gray-800">{event.time}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                        <MapPin className="w-3 h-3 text-gray-400 shrink-0" />
                         <span>{event.location}</span>
                       </div>
                     </div>
 
-                    <p className="text-xs text-gray-600 leading-relaxed font-normal bg-gray-50/80 rounded-lg p-2 border border-gray-100">
+                    <p className="text-[11px] sm:text-xs text-gray-600 leading-relaxed font-normal bg-gray-50/80 rounded-lg p-2 border border-gray-100">
                       {event.description}
                     </p>
                   </motion.div>
@@ -303,23 +340,23 @@ export default function EventCalendar() {
       </div>
 
       {/* Legend & Selected Event Spotlight */}
-      <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="mt-4 pt-3.5 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
         {/* Visual Legend */}
-        <div className="flex items-center gap-4 text-xs text-gray-600">
+        <div className="flex items-center gap-3 text-[11px] sm:text-xs text-gray-600">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#A01A22]"></span>
+            <span className="w-2 h-2 rounded-full bg-[#A01A22]"></span>
             <span className="font-semibold text-gray-800">Campus Event</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+            <span className="w-2 h-2 rounded-full bg-gray-300"></span>
             <span>Regular Academic Day</span>
           </div>
         </div>
 
         {/* Selected Event Quick Info */}
         {selectedEvent && (
-          <div className="flex items-center gap-2 text-xs text-gray-700 bg-red-50/80 border border-red-200/60 rounded-full px-4 py-1.5">
-            <Info className="w-3.5 h-3.5 text-[#A01A22] shrink-0" />
+          <div className="flex items-center gap-2 text-[11px] sm:text-xs text-gray-700 bg-red-50/80 border border-red-200/60 rounded-full px-3 py-1">
+            <Info className="w-3 h-3 text-[#A01A22] shrink-0" />
             <span>
               <strong>Selected:</strong> {selectedEvent.title} (
               {monthNames[month].slice(0, 3)} {selectedEvent.day})

@@ -1,9 +1,9 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Tag, Newspaper } from 'lucide-react';
 import connectToDatabase from '@/lib/mongodb';
 import News from '@/models/News';
-import { fallbackNews } from '@/app/news/page';
+import Event from '@/models/Event';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,12 +13,27 @@ async function getArticle(id) {
       await connectToDatabase();
       const article = await News.findById(id).lean();
       if (article) return JSON.parse(JSON.stringify(article));
+
+      const event = await Event.findById(id).lean();
+      if (event) {
+        return JSON.parse(
+          JSON.stringify({
+            _id: event._id.toString(),
+            title: event.title,
+            category: event.type ? event.type.charAt(0).toUpperCase() + event.type.slice(1) : 'Event',
+            excerpt: event.description,
+            content: event.description,
+            imageUrl: event.imageUrl,
+            eventDate: event.date,
+            createdAt: event.createdAt,
+          })
+        );
+      }
     }
   } catch (e) {
-    // ignore invalid ObjectId format and check fallbackNews
+    // ignore invalid ObjectId format
   }
-  const sample = fallbackNews.find((item) => item._id === id);
-  return sample || null;
+  return null;
 }
 
 export default async function NewsDetailPage({ params }) {

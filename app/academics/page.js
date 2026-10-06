@@ -44,32 +44,25 @@ const classLevels = [
   },
 ];
 
-const facultyHighlights = [
-  {
-    title: 'Certified Montessori Directress',
-    desc: 'Expert early childhood guidance fostering child-centered learning and developmental care.',
-    image: '/images/academics/faculty_montessori.jpg',
-    badge: 'Montessori Care',
-  },
-  {
-    title: 'AMI & LMI Certified Educators',
-    desc: 'Internationally trained teachers utilizing scientific teaching techniques and structured methodologies.',
-    image: '/images/academics/faculty_certified.jpg',
-    badge: 'Faculty Credentials',
-  },
-  {
-    title: 'Activity-Based STEM Learning',
-    desc: 'Hands-on projects, experiments, robotics, and group activities to stimulate analytical curiosity.',
-    image: '/images/academics/senior_primary.jpg',
-    badge: 'STEM & Robotics',
-  },
-  {
-    title: 'Dedicated Kids Play Area',
-    desc: 'Safe, interactive indoor play infrastructure supporting gross motor and social development.',
-    image: '/images/academics/kids_play_area.jpg',
-    badge: 'Physical Play',
-  },
-];
+import connectToDatabase from '@/lib/mongodb';
+import Faculty from '@/models/Faculty';
+
+export const dynamic = 'force-dynamic';
+
+async function getFacultyMembers() {
+  try {
+    if (process.env.MONGODB_URI) {
+      await connectToDatabase();
+      const members = await Faculty.find({ isActive: true }).sort({ createdAt: -1 }).lean();
+      if (members && members.length > 0) {
+        return JSON.parse(JSON.stringify(members));
+      }
+    }
+  } catch (err) {
+    console.error('Error loading faculty for academics page:', err);
+  }
+  return [];
+}
 
 const methodologies = [
   {
@@ -94,7 +87,9 @@ const methodologies = [
   },
 ];
 
-export default function AcademicsPage() {
+export default async function AcademicsPage() {
+  const facultyList = await getFacultyMembers();
+
   return (
     <div className="w-full bg-transparent">
       {/* 1. Header & Class Levels */}
@@ -193,34 +188,56 @@ export default function AcademicsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-            {facultyHighlights.map((f, idx) => (
-              <MotionCard key={f.title} index={idx} className="h-full">
-                <div
-                  className="bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500 flex flex-col h-full"
-                >
-                  <div className="relative w-full aspect-video md:aspect-video overflow-hidden">
-                    <Image
-                      src={f.image}
-                      alt={f.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 25vw"
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
-                    />
-                    <span className="absolute bottom-2 left-2 md:bottom-2.5 md:left-2.5 bg-[#A01A22] text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow">
-                      {f.badge}
-                    </span>
-                  </div>
-                  <div className="p-3 md:p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                      <h3 className="text-xs sm:text-sm md:text-base font-bold text-gray-900 tracking-tight mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-none">{f.title}</h3>
-                      <p className="text-[11px] sm:text-xs text-gray-700 leading-relaxed font-normal line-clamp-2 sm:line-clamp-3">{f.desc}</p>
+          {facultyList.length === 0 ? (
+            <div className="bg-white/95 backdrop-blur-xl border border-dashed border-red-200 rounded-2xl p-8 sm:p-12 text-center text-gray-500 shadow-md max-w-lg mx-auto space-y-3">
+              <div className="w-12 h-12 rounded-full bg-red-50 text-[#A01A22] flex items-center justify-center mx-auto">
+                <CheckCircle className="w-6 h-6" />
+              </div>
+              <h3 className="font-bold text-gray-900 text-base">New updates coming soon</h3>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Our certified faculty directory and educator credentials are being updated. Check back soon for the latest profiles!
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+              {facultyList.map((f, idx) => (
+                <MotionCard key={f._id} index={idx} className="h-full">
+                  <div
+                    className="bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500 flex flex-col h-full"
+                  >
+                    <div className="relative w-full aspect-video md:aspect-video overflow-hidden bg-red-50/50">
+                      {f.imageUrl ? (
+                        <Image
+                          src={f.imageUrl}
+                          alt={f.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 25vw"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[#A01A22]">
+                          <span className="text-xs font-bold text-center px-2">{f.name}</span>
+                        </div>
+                      )}
+                      <span className="absolute bottom-2 left-2 md:bottom-2.5 md:left-2.5 bg-[#A01A22] text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow truncate max-w-[85%]">
+                        {f.designation}
+                      </span>
+                    </div>
+                    <div className="p-3 md:p-6 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xs sm:text-sm md:text-base font-bold text-gray-900 tracking-tight mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-none">
+                          {f.name}
+                        </h3>
+                        <p className="text-[11px] sm:text-xs text-gray-700 leading-relaxed font-normal line-clamp-2 sm:line-clamp-3">
+                          {f.degree} {f.experience ? `• ${f.experience}` : ''}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </MotionCard>
-            ))}
-          </div>
+                </MotionCard>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

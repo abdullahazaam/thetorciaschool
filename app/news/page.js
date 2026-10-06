@@ -5,79 +5,39 @@ import MotionCard from '@/components/MotionCard';
 import EventCalendar from '@/components/EventCalendar';
 import connectToDatabase from '@/lib/mongodb';
 import News from '@/models/News';
+import Event from '@/models/Event';
 
 export const dynamic = 'force-dynamic';
-
-export const fallbackNews = [
-  {
-    _id: 'sample-1',
-    title: 'Admissions Open for Academic Session 2026-2027',
-    category: 'Announcement',
-    excerpt: 'The Torcia School is pleased to announce admissions open from Playgroup to Class V. Parents are encouraged to schedule an assessment visit.',
-    imageUrl: '/images/news/admissions.jpg',
-    eventDate: new Date().toISOString(),
-    isFeatured: true,
-  },
-  {
-    _id: 'sample-2',
-    title: 'Annual 14th August Independence Day Celebrations',
-    category: 'Event',
-    excerpt: 'Students celebrated freedom and national identity with patriotic displays, speeches, and cultural presentations.',
-    imageUrl: '/images/news/independence_day.jpg',
-    eventDate: new Date().toISOString(),
-    isFeatured: false,
-  },
-  {
-    _id: 'sample-3',
-    title: 'Eid Milad-un-Nabi & Seerah Gathering',
-    category: 'Event',
-    excerpt: 'Celebrating the birth and exemplary character of the Beloved Prophet Muhammad (SAW) through recitation and moral reflections.',
-    imageUrl: '/images/news/eid_milad.jpg',
-    eventDate: new Date(Date.now() - 86400000 * 3).toISOString(),
-    isFeatured: false,
-  },
-  {
-    _id: 'sample-4',
-    title: 'Educator Excellence: Free Teacher Training Workshop',
-    category: 'News',
-    excerpt: 'Professional development session on child psychology, classroom management, and SMART lesson planning.',
-    imageUrl: '/images/news/teacher_workshop.jpg',
-    eventDate: new Date(Date.now() - 86400000 * 10).toISOString(),
-    isFeatured: false,
-  },
-  {
-    _id: 'sample-5',
-    title: 'Activity-Based STEM & Robotics Exploration',
-    category: 'News',
-    excerpt: 'Engaging primary grade learners with hands-on robotic mechanisms, scientific models, and exploratory group activities.',
-    imageUrl: '/images/news/stem_robotics.jpg',
-    eventDate: new Date(Date.now() - 86400000 * 14).toISOString(),
-    isFeatured: false,
-  },
-  {
-    _id: 'sample-6',
-    title: 'Montessori Sensory & Fine Motor Workshops',
-    category: 'Achievement',
-    excerpt: 'Early years learners discovering mathematical concepts and spatial concentration with Montessori manipulatives.',
-    imageUrl: '/images/news/montessori_sensory.jpg',
-    eventDate: new Date(Date.now() - 86400000 * 20).toISOString(),
-    isFeatured: false,
-  },
-];
 
 async function getNews() {
   try {
     if (process.env.MONGODB_URI) {
       await connectToDatabase();
-      const newsDocs = await News.find({}).sort({ createdAt: -1 }).limit(12).lean();
-      if (newsDocs && newsDocs.length > 0) {
-        return JSON.parse(JSON.stringify(newsDocs));
+      const [newsDocs, eventDocs] = await Promise.all([
+        News.find({}).sort({ createdAt: -1 }).limit(12).lean().catch(() => []),
+        Event.find({ isActive: true }).sort({ date: -1 }).limit(12).lean().catch(() => []),
+      ]);
+
+      const formattedEvents = eventDocs.map((e) => ({
+        _id: e._id.toString(),
+        title: e.title,
+        category: e.type ? e.type.charAt(0).toUpperCase() + e.type.slice(1) : 'Event',
+        excerpt: e.description,
+        content: e.description,
+        imageUrl: e.imageUrl,
+        eventDate: e.date ? new Date(e.date).toISOString() : new Date().toISOString(),
+        isFeatured: false,
+      }));
+
+      const combined = [...formattedEvents, ...newsDocs];
+      if (combined.length > 0) {
+        return JSON.parse(JSON.stringify(combined));
       }
     }
   } catch (error) {
     console.error('Error fetching news from database:', error.message);
   }
-  return fallbackNews;
+  return [];
 }
 
 export default async function NewsPage() {
@@ -101,7 +61,18 @@ export default async function NewsPage() {
         </div>
 
         {/* 2. News Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8 items-stretch">
+        {newsList.length === 0 ? (
+          <div className="bg-white/95 backdrop-blur-xl border border-dashed border-red-200 rounded-2xl p-10 sm:p-14 text-center text-gray-500 shadow-md max-w-lg mx-auto space-y-3">
+            <div className="w-12 h-12 rounded-full bg-red-50 text-[#A01A22] flex items-center justify-center mx-auto">
+              <Newspaper className="w-6 h-6" />
+            </div>
+            <h3 className="font-bold text-gray-900 text-base">New updates coming soon</h3>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              We are currently preparing fresh announcements and upcoming events. Check back soon for the latest campus updates!
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8 items-stretch">
             {newsList.map((item, idx) => {
               const dateStr = item.eventDate
                 ? new Date(item.eventDate).toLocaleDateString('en-US', {
@@ -167,18 +138,19 @@ export default async function NewsPage() {
               );
             })}
           </div>
+        )}
 
           {/* 3. Academic Calendar & Upcoming Events Section */}
-          <section className="mt-16 sm:mt-20">
-            <div className="max-w-4xl mx-auto text-center space-y-3 mb-8 sm:mb-10">
-              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1.5">
+          <section className="mt-10 sm:mt-12">
+            <div className="max-w-4xl mx-auto text-center space-y-1.5 sm:space-y-2 mb-5 sm:mb-6">
+              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1">
                 CAMPUS SCHEDULE &amp; EVENTS
               </span>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
                 Academic Calendar &amp; Upcoming Events
               </h2>
-              <div className="w-14 h-1 bg-[#A01A22] rounded-full mx-auto my-3"></div>
-              <p className="text-gray-900 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-normal">
+              <div className="w-12 h-1 bg-[#A01A22] rounded-full mx-auto my-2"></div>
+              <p className="text-gray-900 max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed font-normal">
                 Explore scheduled campus milestones, parent-teacher conferences, student exhibitions, and holiday observances at The Torcia School.
               </p>
             </div>
@@ -190,8 +162,8 @@ export default async function NewsPage() {
 
           {/* Admin note banner */}
           <MotionCard index={0} className="w-full">
-            <div className="mt-16 p-8 sm:p-10 rounded-2xl bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500 text-center max-w-xl mx-auto space-y-2.5">
-              <p className="text-sm text-gray-700 font-medium">
+            <div className="mt-8 sm:mt-10 p-5 sm:p-6 rounded-2xl bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.2)] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500 text-center max-w-xl mx-auto space-y-2">
+              <p className="text-xs sm:text-sm text-gray-700 font-medium">
                 Campus administrators can publish new stories, upload event photos, or archive announcements directly.
               </p>
               <Link

@@ -14,6 +14,9 @@ import News from '@/models/News';
 import Admission from '@/models/Admission';
 import Contact from '@/models/Contact';
 import Inquiry from '@/models/Inquiry';
+import Event from '@/models/Event';
+import Submission from '@/models/Submission';
+import Faculty from '@/models/Faculty';
 import AdminInquiriesTable from '@/components/AdminInquiriesTable';
 
 export const dynamic = 'force-dynamic';
@@ -30,21 +33,33 @@ async function getStats() {
       await connectToDatabase();
       dbStatus = 'Connected';
 
-      const [admCount, cntCount, inqCount, nwsCount] = await Promise.all([
+      const [
+        admCount,
+        cntCount,
+        inqCount,
+        nwsCount,
+        eventCount,
+        subAdmCount,
+        subCntCount,
+      ] = await Promise.all([
         Admission.countDocuments().catch(() => 0),
         Contact.countDocuments().catch(() => 0),
         Inquiry.countDocuments().catch(() => 0),
         News.countDocuments().catch(() => 0),
+        Event.countDocuments().catch(() => 0),
+        Submission.countDocuments({ type: 'admission' }).catch(() => 0),
+        Submission.countDocuments({ type: 'contact' }).catch(() => 0),
       ]);
 
-      admissionsCount = admCount;
-      contactCount = cntCount + inqCount;
-      newsCount = nwsCount;
+      admissionsCount = admCount + subAdmCount;
+      contactCount = cntCount + inqCount + subCntCount;
+      newsCount = nwsCount + eventCount;
 
-      const [latestAdmissions, latestContacts, latestInquiries] = await Promise.all([
+      const [latestAdmissions, latestContacts, latestInquiries, latestSubmissions] = await Promise.all([
         Admission.find({}).sort({ createdAt: -1 }).limit(5).lean().catch(() => []),
         Contact.find({}).sort({ createdAt: -1 }).limit(5).lean().catch(() => []),
         Inquiry.find({}).sort({ createdAt: -1 }).limit(5).lean().catch(() => []),
+        Submission.find({}).sort({ createdAt: -1 }).limit(5).lean().catch(() => []),
       ]);
 
       const formatted = [
@@ -78,10 +93,21 @@ async function getStats() {
           status: i.status || 'pending',
           createdAt: i.createdAt,
         })),
+        ...latestSubmissions.map((s) => ({
+          _id: s._id.toString(),
+          type: s.type === 'admission' ? 'Admission' : 'Contact',
+          source: 'submission',
+          name: s.name,
+          email: s.email || 'N/A',
+          phone: s.phone || 'N/A',
+          detail: s.message ? (s.message.length > 30 ? s.message.slice(0, 30) + '...' : s.message) : (s.type === 'admission' ? 'Admission inquiry' : 'Contact submission'),
+          status: s.status || 'pending',
+          createdAt: s.createdAt,
+        })),
       ];
 
       formatted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      recentInquiries = formatted.slice(0, 5);
+      recentInquiries = formatted.slice(0, 8);
     }
   } catch (e) {
     console.error('Error fetching admin dashboard stats:', e);
@@ -187,38 +213,54 @@ export default async function AdminDashboardPage() {
               </Link>
 
               <Link
-                href="/admissions"
-                target="_blank"
+                href="/admin/faculty"
                 className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-red-100 hover:bg-red-50/50 transition-all duration-200 group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-gray-100 text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition">
-                    <Users className="w-5 h-5" />
+                  <div className="p-2.5 rounded-xl bg-red-50 text-red-600 group-hover:bg-[#A01A22] group-hover:text-white transition">
+                    <GraduationCap className="w-5 h-5" />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-gray-900 group-hover:text-[#A01A22] transition">
-                      Admission Form
+                      Faculty Directory
                     </h3>
-                    <p className="text-xs text-gray-500">View public admission desk</p>
+                    <p className="text-xs text-gray-500">Add, edit &amp; manage teachers</p>
                   </div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#A01A22] transition" />
               </Link>
 
               <Link
-                href="/contact"
-                target="_blank"
+                href="/admin/admissions"
                 className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-red-100 hover:bg-red-50/50 transition-all duration-200 group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-gray-100 text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition">
+                  <div className="p-2.5 rounded-xl bg-gray-100 text-gray-700 group-hover:bg-[#A01A22] group-hover:text-white transition">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900 group-hover:text-[#A01A22] transition">
+                      Admission Form
+                    </h3>
+                    <p className="text-xs text-gray-500">Manage admission submissions</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#A01A22] transition" />
+              </Link>
+
+              <Link
+                href="/admin/contact"
+                className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-red-100 hover:bg-red-50/50 transition-all duration-200 group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-gray-100 text-gray-700 group-hover:bg-[#A01A22] group-hover:text-white transition">
                     <MessageSquare className="w-5 h-5" />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-gray-900 group-hover:text-[#A01A22] transition">
                       Contact Desk
                     </h3>
-                    <p className="text-xs text-gray-500">View public contact page</p>
+                    <p className="text-xs text-gray-500">Manage contact inquiries and messages</p>
                   </div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#A01A22] transition" />

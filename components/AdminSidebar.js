@@ -6,6 +6,9 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Newspaper,
+  GraduationCap,
+  MessageSquare,
+  Users,
   ExternalLink,
   LogOut,
   ShieldCheck,
@@ -15,7 +18,10 @@ import { schoolBrand } from '@/lib/schoolImages';
 
 const navItems = [
   { name: 'Dashboard Overview', href: '/admin', icon: LayoutDashboard },
+  { name: 'Admissions', href: '/admin/admissions', icon: GraduationCap },
+  { name: 'Contact Inquiries', href: '/admin/contact', icon: MessageSquare },
   { name: 'News & Announcements', href: '/admin/news', icon: Newspaper },
+  { name: 'Faculty Management', href: '/admin/faculty', icon: Users },
 ];
 
 export default function AdminSidebar({ onLogout }) {

@@ -103,14 +103,16 @@ export default function RootLayout({ children }) {
         <meta name="theme-color" content="#991b1b" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className={`${inter.className} min-h-screen text-gray-900`}>
+      <body
+        className={`${inter.className} min-h-screen text-gray-900 bg-[linear-gradient(rgba(255,255,255,0.85),rgba(255,255,255,0.85)),url('/images/mbl-background.png')] bg-cover bg-fixed bg-center bg-no-repeat md:bg-none md:bg-white`}
+      >
         {/* Local School JSON-LD Schema for Google Search & Knowledge Panel */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schoolJsonLd) }}
         />
-        <div className="fixed inset-0 -z-20 bg-[url('/images/background.png')] bg-no-repeat bg-[length:100%_auto] bg-top md:bg-cover md:bg-center"></div>
-        <div className="fixed inset-0 -z-15 bg-white/85"></div>
+        <div className="hidden md:block fixed inset-0 -z-20 bg-[url('/images/background.png')] bg-no-repeat bg-[length:100%_auto] bg-top md:bg-cover md:bg-center"></div>
+        <div className="hidden md:block fixed inset-0 -z-15 bg-white/85"></div>
         <div className="relative z-10">
           <AppLayoutWrapper>{children}</AppLayoutWrapper>
           <InstallPWA />
