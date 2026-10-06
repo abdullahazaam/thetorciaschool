@@ -126,7 +126,7 @@ export default function AcademicsPage() {
                       src={lvl.image}
                       alt={lvl.grade}
                       fill
-                      sizes="(max-width: 768px) 50vw, 50vw"
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
                     <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-white/95 text-[#A01A22] px-2 py-0.5 sm:px-3.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold shadow-md">
@@ -204,7 +204,7 @@ export default function AcademicsPage() {
                       src={f.image}
                       alt={f.title}
                       fill
-                      sizes="(max-width: 640px) 50vw, 25vw"
+                      sizes="(max-width: 768px) 100vw, 25vw"
                       className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
                     <span className="absolute bottom-2 left-2 md:bottom-2.5 md:left-2.5 bg-[#A01A22] text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow">

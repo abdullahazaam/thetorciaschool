@@ -1,8 +1,10 @@
 import './globals.css';
 import { Inter, Playfair_Display } from 'next/font/google';
+import dynamic from 'next/dynamic';
 import AppLayoutWrapper from '@/components/AppLayoutWrapper';
-import AIChatWidget from '@/components/AIChatWidget';
-import InstallPWA from '@/components/InstallPWA';
+
+const InstallPWA = dynamic(() => import('@/components/InstallPWA'), { ssr: false });
+const AIChatWidget = dynamic(() => import('@/components/AIChatWidget'), { ssr: false });
 
 const inter = Inter({
   subsets: ['latin'],
@@ -16,13 +18,18 @@ const playfair = Playfair_Display({
   variable: '--font-playfair',
 });
 
+export const viewport = {
+  themeColor: '#991b1b',
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata = {
   applicationName: 'Torcia School',
   title: 'The Torcia School | Growing Future Leaders in Karachi',
   description: 'Admissions open from Playgroup to Class V. The Torcia School in Nazimabad offers quality education in a disciplined, values-based environment.',
   keywords: ['The Torcia School', 'Best school in Nazimabad', 'Primary school Karachi', 'Montessori admissions', 'Top school near Abbasi Shaheed Hospital'],
   manifest: '/manifest.json',
-  themeColor: '#991b1b',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

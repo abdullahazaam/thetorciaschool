@@ -23,7 +23,6 @@ export default function AdmissionsPromo({
           fill
           sizes="(max-width: 768px) 100vw, 1200px"
           className="object-cover object-center filter brightness-[0.85]"
-          priority
         />
         {/* Dark Gradient Overlay for optimal text contrast */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/85 backdrop-blur-[1px]" />

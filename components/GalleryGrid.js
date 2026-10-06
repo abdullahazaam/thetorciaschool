@@ -34,9 +34,8 @@ export default function GalleryGrid({ limit }) {
                 src={item.src}
                 alt={item.title}
                 fill
-                sizes="(max-width: 768px) 50vw, 33vw"
+                sizes="(max-width: 768px) 100vw, 33vw"
                 className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
-                priority={index < 2}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex items-end p-5">
                 <span className="text-xs font-semibold text-white flex items-center gap-1.5">

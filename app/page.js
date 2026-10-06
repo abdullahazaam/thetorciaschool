@@ -336,6 +336,7 @@ export default function HomePage() {
                   src="/images/14.jpeg"
                   alt="Parent Testimonial"
                   fill
+                  sizes="(max-width: 640px) 56px, 80px"
                   className="object-cover object-center"
                 />
               </div>

@@ -80,6 +80,7 @@ export default function ContactPage() {
                     src="/images/3.jpeg"
                     alt="The Torcia School Nazimabad Campus"
                     fill
+                    sizes="(max-width: 1024px) 100vw, 42vw"
                     className="w-full h-full object-cover object-center"
                     priority
                   />

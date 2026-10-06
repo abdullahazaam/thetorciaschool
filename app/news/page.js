@@ -123,7 +123,7 @@ export default async function NewsPage() {
                           src={item.imageUrl}
                           alt={item.title}
                           fill
-                          sizes="(max-width: 768px) 50vw, 33vw"
+                          sizes="(max-width: 768px) 100vw, 33vw"
                           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                         />
                       ) : (

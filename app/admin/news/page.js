@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import {
   Newspaper,
   Plus,
@@ -277,7 +278,7 @@ export default function AdminNewsPage() {
 
               {imagePreview && (
                 <div className="mt-3 relative rounded-xl overflow-hidden border border-gray-200 h-32 w-full">
-                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  <Image src={imagePreview} alt="Preview" fill unoptimized className="object-cover" />
                 </div>
               )}
             </div>
@@ -317,7 +318,7 @@ export default function AdminNewsPage() {
                   <div className="flex items-center gap-3.5 min-w-0">
                     {item.imageUrl ? (
                       <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-100">
-                        <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                        <Image src={item.imageUrl} alt={item.title} fill sizes="56px" className="object-cover" />
                       </div>
                     ) : (
                       <div className="w-14 h-14 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-[#A01A22] shrink-0">
