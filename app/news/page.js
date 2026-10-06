@@ -1,0 +1,209 @@
+import Link from 'next/link';
+import Image from 'next/image';
+import { Calendar, Tag, ArrowRight, Newspaper } from 'lucide-react';
+import MotionCard from '@/components/MotionCard';
+import EventCalendar from '@/components/EventCalendar';
+import connectToDatabase from '@/lib/mongodb';
+import News from '@/models/News';
+
+export const dynamic = 'force-dynamic';
+
+export const fallbackNews = [
+  {
+    _id: 'sample-1',
+    title: 'Admissions Open for Academic Session 2026-2027',
+    category: 'Announcement',
+    excerpt: 'The Torcia School is pleased to announce admissions open from Playgroup to Class V. Parents are encouraged to schedule an assessment visit.',
+    imageUrl: '/images/news/admissions.jpg',
+    eventDate: new Date().toISOString(),
+    isFeatured: true,
+  },
+  {
+    _id: 'sample-2',
+    title: 'Annual 14th August Independence Day Celebrations',
+    category: 'Event',
+    excerpt: 'Students celebrated freedom and national identity with patriotic displays, speeches, and cultural presentations.',
+    imageUrl: '/images/news/independence_day.jpg',
+    eventDate: new Date().toISOString(),
+    isFeatured: false,
+  },
+  {
+    _id: 'sample-3',
+    title: 'Eid Milad-un-Nabi & Seerah Gathering',
+    category: 'Event',
+    excerpt: 'Celebrating the birth and exemplary character of the Beloved Prophet Muhammad (SAW) through recitation and moral reflections.',
+    imageUrl: '/images/news/eid_milad.jpg',
+    eventDate: new Date(Date.now() - 86400000 * 3).toISOString(),
+    isFeatured: false,
+  },
+  {
+    _id: 'sample-4',
+    title: 'Educator Excellence: Free Teacher Training Workshop',
+    category: 'News',
+    excerpt: 'Professional development session on child psychology, classroom management, and SMART lesson planning.',
+    imageUrl: '/images/news/teacher_workshop.jpg',
+    eventDate: new Date(Date.now() - 86400000 * 10).toISOString(),
+    isFeatured: false,
+  },
+  {
+    _id: 'sample-5',
+    title: 'Activity-Based STEM & Robotics Exploration',
+    category: 'News',
+    excerpt: 'Engaging primary grade learners with hands-on robotic mechanisms, scientific models, and exploratory group activities.',
+    imageUrl: '/images/news/stem_robotics.jpg',
+    eventDate: new Date(Date.now() - 86400000 * 14).toISOString(),
+    isFeatured: false,
+  },
+  {
+    _id: 'sample-6',
+    title: 'Montessori Sensory & Fine Motor Workshops',
+    category: 'Achievement',
+    excerpt: 'Early years learners discovering mathematical concepts and spatial concentration with Montessori manipulatives.',
+    imageUrl: '/images/news/montessori_sensory.jpg',
+    eventDate: new Date(Date.now() - 86400000 * 20).toISOString(),
+    isFeatured: false,
+  },
+];
+
+async function getNews() {
+  try {
+    if (process.env.MONGODB_URI) {
+      await connectToDatabase();
+      const newsDocs = await News.find({}).sort({ createdAt: -1 }).limit(12).lean();
+      if (newsDocs && newsDocs.length > 0) {
+        return JSON.parse(JSON.stringify(newsDocs));
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching news from database:', error.message);
+  }
+  return fallbackNews;
+}
+
+export default async function NewsPage() {
+  const newsList = await getNews();
+
+  return (
+    <div className="w-full bg-transparent py-10 sm:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 1. Header */}
+        <div className="max-w-4xl mx-auto text-center space-y-3 mb-8 sm:mb-10">
+          <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1.5">
+            CAMPUS UPDATES &amp; EVENTS
+          </span>
+          <h1 className="text-3xl md:text-4xl lg:text-[40px] font-extrabold text-gray-900 tracking-tight leading-tight">
+            News &amp; Campus Announcements
+          </h1>
+          <div className="w-14 h-1 bg-[#A01A22] rounded-full mx-auto my-3"></div>
+          <p className="text-gray-900 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-normal">
+            Stay informed about campus activities, academic milestones, celebrations, and student achievements at The Torcia School.
+          </p>
+        </div>
+
+        {/* 2. News Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8 items-stretch">
+            {newsList.map((item, idx) => {
+              const dateStr = item.eventDate
+                ? new Date(item.eventDate).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })
+                : 'Recent';
+
+              return (
+                <MotionCard key={item._id} index={idx} className="h-full">
+                  <Link
+                    href={`/news/${item._id}`}
+                    className="group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl overflow-hidden flex flex-col h-full"
+                  >
+                    <div className="relative w-full aspect-video md:aspect-video overflow-hidden">
+                      {item.imageUrl ? (
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.title}
+                          fill
+                          sizes="(max-width: 768px) 50vw, 33vw"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                          <Newspaper className="w-8 h-8 sm:w-10 sm:h-10" />
+                        </div>
+                      )}
+
+                      <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-white text-[#A01A22] px-2 py-0.5 sm:px-3.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 shadow-md">
+                        <Tag className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                        <span>{item.category || 'News'}</span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 sm:p-5 md:p-8 space-y-2 md:space-y-4 flex-1 flex flex-col justify-between flex-grow">
+                      <div className="flex-grow">
+                        <span className="text-[10px] sm:text-xs text-gray-600 flex items-center gap-1 sm:gap-1.5 mb-1 sm:mb-2.5 font-semibold">
+                          <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#A01A22]" />
+                          {dateStr}
+                        </span>
+
+                        <h2 className="text-xs sm:text-base md:text-xl font-bold font-serif text-gray-900 tracking-tight line-clamp-2 group-hover:text-red-700 transition-colors leading-snug">
+                          {item.title}
+                        </h2>
+
+                        <p className="text-[11px] sm:text-xs md:text-sm text-gray-700 leading-relaxed line-clamp-2 md:line-clamp-3 mt-1 sm:mt-2.5 font-normal">
+                          {item.excerpt}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 sm:pt-4 md:pt-5 border-t border-gray-100 flex items-center justify-between mt-auto">
+                        <span className="text-[10px] sm:text-xs text-gray-500 font-medium hidden sm:inline">The Torcia School</span>
+                        <div className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold text-[#A01A22] hover:text-white hover:bg-[#A01A22] active:scale-95 transition-all duration-300 hover:shadow-[0_10px_20px_rgba(220,38,38,0.2)] hover:-translate-y-1">
+                          <span>Read Story</span>
+                          <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </MotionCard>
+              );
+            })}
+          </div>
+
+          {/* 3. Academic Calendar & Upcoming Events Section */}
+          <section className="mt-16 sm:mt-20">
+            <div className="max-w-4xl mx-auto text-center space-y-3 mb-8 sm:mb-10">
+              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1.5">
+                CAMPUS SCHEDULE &amp; EVENTS
+              </span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                Academic Calendar &amp; Upcoming Events
+              </h2>
+              <div className="w-14 h-1 bg-[#A01A22] rounded-full mx-auto my-3"></div>
+              <p className="text-gray-900 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-normal">
+                Explore scheduled campus milestones, parent-teacher conferences, student exhibitions, and holiday observances at The Torcia School.
+              </p>
+            </div>
+
+            <MotionCard index={0} className="w-full max-w-5xl mx-auto">
+              <EventCalendar />
+            </MotionCard>
+          </section>
+
+          {/* Admin note banner */}
+          <MotionCard index={0} className="w-full">
+            <div className="mt-16 p-8 sm:p-10 rounded-2xl bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500 text-center max-w-xl mx-auto space-y-2.5">
+              <p className="text-sm text-gray-700 font-medium">
+                Campus administrators can publish new stories, upload event photos, or archive announcements directly.
+              </p>
+              <Link
+                href="/admin"
+                className="inline-block text-xs font-bold text-[#A01A22] hover:underline underline-offset-4 tracking-wide"
+              >
+                Access Admin Portal →
+              </Link>
+            </div>
+          </MotionCard>
+        </div>
+      </div>
+  );
+}
+
