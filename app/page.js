@@ -19,7 +19,6 @@ import MotionCard from '@/components/MotionCard';
 import { aboutImages } from '@/lib/schoolImages';
 import connectToDatabase from '@/lib/mongodb';
 import Event from '@/models/Event';
-import News from '@/models/News';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,21 +29,6 @@ async function getFeaturedEvents() {
       const events = await Event.find({ isActive: true }).sort({ date: -1 }).limit(3).lean();
       if (events && events.length > 0) {
         return JSON.parse(JSON.stringify(events));
-      }
-      const news = await News.find({}).sort({ createdAt: -1 }).limit(3).lean();
-      if (news && news.length > 0) {
-        return JSON.parse(
-          JSON.stringify(
-            news.map((n) => ({
-              _id: n._id.toString(),
-              title: n.title,
-              description: n.excerpt || n.content,
-              type: 'news',
-              date: n.eventDate || n.createdAt,
-              imageUrl: n.imageUrl,
-            }))
-          )
-        );
       }
     }
   } catch (e) {

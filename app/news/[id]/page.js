@@ -11,16 +11,13 @@ async function getArticle(id) {
   try {
     if (process.env.MONGODB_URI) {
       await connectToDatabase();
-      const article = await News.findById(id).lean();
-      if (article) return JSON.parse(JSON.stringify(article));
-
       const event = await Event.findById(id).lean();
       if (event) {
         return JSON.parse(
           JSON.stringify({
             _id: event._id.toString(),
             title: event.title,
-            category: event.type ? event.type.charAt(0).toUpperCase() + event.type.slice(1) : 'Event',
+            category: event.type ? event.type.charAt(0).toUpperCase() + event.type.slice(1) : 'News',
             excerpt: event.description,
             content: event.description,
             imageUrl: event.imageUrl,
@@ -29,6 +26,9 @@ async function getArticle(id) {
           })
         );
       }
+
+      const article = await News.findById(id).lean();
+      if (article) return JSON.parse(JSON.stringify(article));
     }
   } catch (e) {
     // ignore invalid ObjectId format

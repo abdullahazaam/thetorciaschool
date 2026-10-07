@@ -4,7 +4,6 @@ import { Calendar, Tag, ArrowRight, Newspaper } from 'lucide-react';
 import MotionCard from '@/components/MotionCard';
 import EventCalendar from '@/components/EventCalendar';
 import connectToDatabase from '@/lib/mongodb';
-import News from '@/models/News';
 import Event from '@/models/Event';
 
 export const dynamic = 'force-dynamic';
@@ -13,26 +12,20 @@ async function getNews() {
   try {
     if (process.env.MONGODB_URI) {
       await connectToDatabase();
-      const [newsDocs, eventDocs] = await Promise.all([
-        News.find({}).sort({ createdAt: -1 }).limit(12).lean().catch(() => []),
-        Event.find({ isActive: true }).sort({ date: -1 }).limit(12).lean().catch(() => []),
-      ]);
-
-      const formattedEvents = eventDocs.map((e) => ({
-        _id: e._id.toString(),
-        title: e.title,
-        category: e.type ? e.type.charAt(0).toUpperCase() + e.type.slice(1) : 'Event',
-        excerpt: e.description,
-        content: e.description,
-        imageUrl: e.imageUrl,
-        eventDate: e.date ? new Date(e.date).toISOString() : new Date().toISOString(),
-        isFeatured: false,
-      }));
-
-      const combined = [...formattedEvents, ...newsDocs];
-      if (combined.length > 0) {
-        return JSON.parse(JSON.stringify(combined));
-      }
+      const events = await Event.find({ isActive: true }).sort({ date: -1 }).lean();
+      const fetchedNews = (events || [])
+        .filter((e) => e.type === 'news')
+        .map((e) => ({
+          _id: e._id.toString(),
+          title: e.title,
+          category: 'News',
+          excerpt: e.description,
+          content: e.description,
+          imageUrl: e.imageUrl,
+          eventDate: e.date ? new Date(e.date).toISOString() : new Date().toISOString(),
+          isFeatured: false,
+        }));
+      return JSON.parse(JSON.stringify(fetchedNews));
     }
   } catch (error) {
     console.error('Error fetching news from database:', error.message);
@@ -41,7 +34,7 @@ async function getNews() {
 }
 
 export default async function NewsPage() {
-  const newsList = await getNews();
+  const fetchedNews = await getNews();
 
   return (
     <div className="w-full bg-transparent py-10 sm:py-12">
@@ -61,7 +54,7 @@ export default async function NewsPage() {
         </div>
 
         {/* 2. News Grid */}
-        {newsList.length === 0 ? (
+        {fetchedNews.length === 0 ? (
           <div className="bg-white/95 backdrop-blur-xl border border-dashed border-red-200 rounded-2xl p-10 sm:p-14 text-center text-gray-500 shadow-md max-w-lg mx-auto space-y-3">
             <div className="w-12 h-12 rounded-full bg-red-50 text-[#A01A22] flex items-center justify-center mx-auto">
               <Newspaper className="w-6 h-6" />
@@ -73,7 +66,7 @@ export default async function NewsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8 items-stretch">
-            {newsList.map((item, idx) => {
+            {fetchedNews.map((item, idx) => {
               const dateStr = item.eventDate
                 ? new Date(item.eventDate).toLocaleDateString('en-US', {
                     month: 'short',
