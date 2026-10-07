@@ -16,6 +16,10 @@ build/
 # misc
 .DS_Store
 *.pem
+*.key
+*.p12
+*.pfx
+*.publishsettings
 
 # debug
 npm-debug.log*
@@ -23,6 +27,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env*.local
 .env
 .env.local
 .env.development.local
