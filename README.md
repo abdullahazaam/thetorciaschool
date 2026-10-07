@@ -1,5 +1,7 @@
 # The Torcia School
 
+[![Next.js](https://img.shields.io/badge/Next.js-14-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/) [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/) [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas) [![Tailwind](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+
 > **Growing Future Leaders**
 
 A premium, responsive school web portal for **The Torcia School, Nazimabad, Karachi**. The project combines a polished public-facing experience with a protected admin dashboard for managing admissions, inquiries, news, and media.
@@ -63,6 +65,10 @@ next.config.js             # Next.js, PWA and security configuration
 
 ## 🚀 Getting Started
 
+### Quality checks
+
+Before pushing changes, run `npm run lint` and `npm run build`.
+
 ### 1. Install dependencies
 
 ```bash
@@ -122,6 +128,21 @@ npm start
 Nazimabad, Karachi, Pakistan  
 **Tagline:** Growing Future Leaders  
 **Classes:** Playgroup to Class V
+
+## 🔒 Security
+
+- Never commit `.env.local`, credentials, private keys, database dumps, or deployment secrets.
+- Production secrets belong in the hosting provider's environment settings.
+- Admin routes are protected by middleware and HTTP-only session cookies.
+- See [SECURITY.md](SECURITY.md) for the reporting policy.
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development and pull-request guidelines.
+
+## 📄 License
+
+This project is released under the [MIT License](LICENSE).
 
 ## 👨‍💻 Project
 
