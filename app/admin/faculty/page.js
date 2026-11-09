@@ -358,8 +358,8 @@ export default function AdminFacultyPage() {
               </div>
 
               {imagePreview && (
-                <div className="mt-3 relative rounded-xl overflow-hidden border border-gray-200 h-32 w-32 mx-auto">
-                  <Image src={imagePreview} alt="Preview" fill unoptimized className="object-cover" />
+                <div className="mt-3 relative rounded-xl overflow-hidden border border-gray-200 h-32 w-32 mx-auto bg-slate-100 flex items-center justify-center p-1">
+                  <Image src={imagePreview} alt="Preview" fill unoptimized className="object-contain" />
                 </div>
               )}
             </div>
@@ -420,8 +420,8 @@ export default function AdminFacultyPage() {
                 >
                   <div className="flex items-start gap-3.5">
                     {item.imageUrl ? (
-                      <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-100">
-                        <Image src={item.imageUrl} alt={item.name} fill sizes="56px" className="object-cover" />
+                      <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-gray-200 flex items-center justify-center p-0.5">
+                        <Image src={item.imageUrl} alt={item.name} fill sizes="56px" className="object-contain" />
                       </div>
                     ) : (
                       <div className="w-14 h-14 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-[#A01A22] shrink-0">

@@ -78,7 +78,7 @@ const progressionTiers = [
     grades: 'Playgroup & Nursery',
     age: 'Ages 3 – 4',
     desc: 'Sensory discovery, Montessori manipulatives, fine motor skills, and gentle social habits.',
-    image: '/images/home/early_years.jpg',
+    image: '/images/gallery/montessori-sensory-finger-painting.jpeg',
     href: '/academics',
   },
   {
@@ -86,7 +86,7 @@ const progressionTiers = [
     grades: 'KG-I & KG-II',
     age: 'Ages 4 – 6',
     desc: 'Phonics, early numeracy, bilingual foundation, creative arts, and moral Islamic etiquette.',
-    image: '/images/home/kindergarten.jpg',
+    image: '/images/gallery/student-mothers-day-craft.jpeg',
     href: '/academics',
   },
   {
@@ -94,7 +94,7 @@ const progressionTiers = [
     grades: 'Class I to Class V',
     age: 'Ages 6 – 11',
     desc: 'Rigorous STEM inquiry, mathematical problem solving, English & Urdu fluency, and IT literacy.',
-    image: '/images/home/primary.jpg',
+    image: '/images/gallery/kids-drawing-activity.jpeg',
     href: '/academics',
   },
   {
@@ -102,7 +102,7 @@ const progressionTiers = [
     grades: 'Activity Lab & Robotics',
     age: 'All Primary Grades',
     desc: 'Practical experiments, robotics exploration, digital fluency, and interactive computer science.',
-    image: '/images/home/stem.jpg',
+    image: '/images/gallery/stem-robotics-workshop.jpeg',
     href: '/academics',
   },
 ];
@@ -220,16 +220,16 @@ export default async function HomePage() {
                   className="group cursor-pointer transition-all duration-300 hover:-translate-y-2 bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl overflow-hidden flex flex-col h-full"
                 >
                   {/* Fixed Aspect Ratio Container with Next.js Image */}
-                  <div className="relative w-full aspect-[4/3] md:aspect-video overflow-hidden">
+                  <div className="relative w-full aspect-[4/3] md:aspect-video overflow-hidden bg-slate-100/80 border-b border-gray-100 flex items-center justify-center">
                     <Image
                       src={tier.image}
                       alt={tier.title}
                       fill
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                      className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500 ease-out p-1.5"
                     />
                     {/* Bottom Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent flex items-end p-2.5 sm:p-4">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent flex items-end p-2.5 sm:p-4 pointer-events-none">
                       <div className="w-full flex items-center justify-between text-white">
                         <div>
                           <h3 className="font-bold text-xs sm:text-base tracking-tight text-white group-hover:text-red-200 transition-colors">
@@ -423,14 +423,14 @@ export default async function HomePage() {
                     href={`/news/${evt._id}`}
                     className="group cursor-pointer transition-all duration-300 hover:-translate-y-2 bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl overflow-hidden flex flex-col h-full"
                   >
-                    <div className="relative w-full aspect-video overflow-hidden bg-red-50">
+                    <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-slate-100/80 border-b border-gray-100 flex items-center justify-center">
                       {evt.imageUrl ? (
                         <Image
                           src={evt.imageUrl}
                           alt={evt.title}
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                          className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500 ease-out p-1.5 sm:p-2"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[#A01A22]">

@@ -14,7 +14,7 @@ const classLevels = [
     grade: 'Playgroup & Nursery',
     tier: 'Early Years',
     age: 'Ages 3 – 4',
-    image: '/images/academics/playgroup.jpg',
+    image: '/images/gallery/montessori-sensory-finger-painting.jpeg',
     focus: 'Sensory discovery, motor skills, social habits, early language exposure and phonics.',
     curriculum: ['Montessori-inspired play', 'Pre-writing & Fine Motor Activities', 'Rhymes & Phonics', 'Islamic Manners (Adab)'],
   },
@@ -22,7 +22,7 @@ const classLevels = [
     grade: 'Kindergarten (KG-I & KG-II)',
     tier: 'Pre-Primary',
     age: 'Ages 4 – 6',
-    image: '/images/academics/kindergarten.jpg',
+    image: '/images/gallery/student-mothers-day-craft.jpeg',
     focus: 'Early literacy and numeracy, foundational Urdu & English reading, and cognitive thinking.',
     curriculum: ['English & Urdu Phonics', 'Basic Math Concepts & Numbers', 'General Knowledge & Science Discovery', 'Daily Dua & Islamic Stories'],
   },
@@ -30,7 +30,7 @@ const classLevels = [
     grade: 'Class I to Class III',
     tier: 'Junior Primary',
     age: 'Ages 6 – 9',
-    image: '/images/academics/junior_primary.jpg',
+    image: '/images/gallery/kids-drawing-activity.jpeg',
     focus: 'Structured academic foundation, critical reading comprehension, mathematical reasoning, and hands-on science.',
     curriculum: ['Mathematics & Problem Solving', 'English Comprehension & Creative Writing', 'Science Experiments', 'Nazra Quran & Islamic Studies', 'Introductory Computer Skills'],
   },
@@ -38,7 +38,7 @@ const classLevels = [
     grade: 'Class IV & Class V',
     tier: 'Senior Primary',
     age: 'Ages 9 – 11',
-    image: '/images/academics/senior_primary.jpg',
+    image: '/images/gallery/stem-robotics-workshop.jpeg',
     focus: 'Advanced analytical skills, independent research, digital literacy, and leadership preparation.',
     curriculum: ['Advanced STEM & Scientific Inquiry', 'Bilingual Literacy (English & Urdu)', 'Social Studies & Geography', 'Digital Fluency & Coding Basics', 'Moral Education & Character Building'],
   },
@@ -116,13 +116,13 @@ export default async function AcademicsPage() {
                   className="group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl overflow-hidden flex flex-col h-full"
                 >
                   {/* Aspect Ratio Image Container */}
-                  <div className="relative w-full aspect-video md:aspect-video overflow-hidden">
+                  <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-slate-100/80 border-b border-gray-100 flex items-center justify-center">
                     <Image
                       src={lvl.image}
                       alt={lvl.grade}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                      className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500 ease-out p-1.5 sm:p-2"
                     />
                     <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-white/95 text-[#A01A22] px-2 py-0.5 sm:px-3.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold shadow-md">
                       {lvl.tier}
@@ -205,14 +205,14 @@ export default async function AcademicsPage() {
                   <div
                     className="bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500 flex flex-col h-full"
                   >
-                    <div className="relative w-full aspect-video md:aspect-video overflow-hidden bg-red-50/50">
+                    <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-slate-100/80 border-b border-gray-100 flex items-center justify-center">
                       {f.imageUrl ? (
                         <Image
                           src={f.imageUrl}
                           alt={f.name}
                           fill
                           sizes="(max-width: 768px) 100vw, 25vw"
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                          className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500 ease-out p-1 sm:p-1.5"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[#A01A22]">

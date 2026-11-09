@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CheckCircle2, Phone, Mail, Clock, Send, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Phone, Mail, Clock, Send, AlertCircle, Download, FileText } from 'lucide-react';
 import AdmissionsPromo from '@/components/AdmissionsPromo';
 import MotionCard from '@/components/MotionCard';
 
@@ -64,7 +64,7 @@ export default function AdmissionsPage() {
   };
 
   return (
-    <div className="w-full bg-transparent pt-8 pb-20 md:pt-12 md:pb-12">
+    <div className="w-full bg-slate-50 pt-8 pb-20 md:pt-12 md:pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 1. Header */}
         <div className="max-w-4xl mx-auto text-center space-y-3 mb-8 sm:mb-10">
@@ -126,6 +126,27 @@ export default function AdmissionsPage() {
                     </li>
                   ))}
                 </ol>
+              </div>
+
+              {/* Quick Offline PDF Download Card */}
+              <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-4 sm:p-5 md:p-6 border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500 flex flex-col items-start gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#A01A22] text-white flex items-center justify-center shrink-0 shadow-md">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-gray-900 leading-tight">Offline Application Form</h3>
+                    <p className="text-[11px] text-gray-600">Download, print &amp; submit on campus</p>
+                  </div>
+                </div>
+                <a
+                  href="/forms/The_Torcia_School_Admission_Form.pdf"
+                  download="The_Torcia_School_Admission_Form.pdf"
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-[#A01A22] hover:bg-[#87131A] active:scale-95 text-white font-bold text-xs shadow-md transition-all duration-300 hover:shadow-lg"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Admission Form (PDF)</span>
+                </a>
               </div>
 
               {/* Quick Contact Card in Premium Theme */}
@@ -397,6 +418,101 @@ export default function AdmissionsPage() {
               </div>
             </MotionCard>
           </div>
+
+          {/* 3. Dedicated Admission Criteria, Required Documents & PDF Download Section */}
+          <MotionCard index={2} className="w-full mt-10 md:mt-14">
+            <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-6 sm:p-8 md:p-10 border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                {/* Left Column: Criteria & Documents */}
+                <div className="lg:col-span-7 space-y-6 text-left">
+                  <div>
+                    <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1">
+                      OFFLINE REGISTRATION
+                    </span>
+                    <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight">
+                      Admission Criteria &amp; Required Documents
+                    </h2>
+                    <div className="w-14 h-1 bg-[#A01A22] rounded-full my-3"></div>
+                    <p className="text-gray-700 text-xs sm:text-sm leading-relaxed font-normal">
+                      Parents who prefer an offline paper submission may download the official application form, complete it at home, and present it directly to our campus admission desk alongside the required credentials.
+                    </p>
+                  </div>
+
+                  {/* Criteria & Documents Mini Grids */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Age Criteria */}
+                    <div className="bg-red-50/60 border border-red-100 rounded-xl p-4">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-[#A01A22] mb-3 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#A01A22]"></span>
+                        Admission Criteria
+                      </h3>
+                      <ul className="text-xs text-gray-800 space-y-2 font-medium">
+                        <li>• <strong>Playgroup:</strong> 2.5 years</li>
+                        <li>• <strong>Montessori:</strong> 3.5 to 5 years</li>
+                        <li>• <strong>Grade I:</strong> Minimum 5 years</li>
+                        <li>• <strong>Grade II:</strong> Minimum 6 years</li>
+                        <li>• <strong>Grade III:</strong> Minimum 7 years</li>
+                      </ul>
+                    </div>
+
+                    {/* Required Documents */}
+                    <div className="bg-gray-50 border border-gray-200/80 rounded-xl p-4">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-3 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-gray-600"></span>
+                        Required Documents
+                      </h3>
+                      <ul className="text-xs text-gray-800 space-y-2">
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-[#A01A22] font-bold">✓</span>
+                          <span>Child's Nadra B-Form</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-[#A01A22] font-bold">✓</span>
+                          <span>Passport-size photographs</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-[#A01A22] font-bold">✓</span>
+                          <span>School leaving certificate (if transfer)</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-[#A01A22] font-bold">✓</span>
+                          <span>Parent / Guardian CNIC copy</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column: Download Card & Button */}
+                <div className="lg:col-span-5 bg-slate-50 border border-gray-200/80 rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center space-y-4 shadow-sm">
+                  <div className="w-16 h-16 rounded-2xl bg-[#A01A22] text-white flex items-center justify-center shadow-xl shadow-red-900/20">
+                    <FileText className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg sm:text-xl font-serif text-gray-900 tracking-tight">
+                      Official Admission Form (PDF)
+                    </h3>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Academic Session 2026–2027 • Standard Printable PDF
+                    </p>
+                  </div>
+
+                  <a
+                    href="/forms/The_Torcia_School_Admission_Form.pdf"
+                    download="The_Torcia_School_Admission_Form.pdf"
+                    className="w-full inline-flex items-center justify-center gap-2.5 py-4 px-6 rounded-full bg-[#A01A22] hover:bg-[#87131A] active:scale-95 text-white font-bold text-xs sm:text-sm tracking-wide shadow-xl hover:shadow-[0_12px_28px_rgba(160,26,34,0.35)] hover:-translate-y-1 transition-all duration-300 group"
+                  >
+                    <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+                    <span>Download Admission Form (PDF)</span>
+                  </a>
+
+                  <p className="text-[11px] text-gray-500 leading-relaxed max-w-xs">
+                    Click above to save the form directly to your device. Print, fill out, and bring to the admissions desk.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </MotionCard>
         </div>
       </div>
   );

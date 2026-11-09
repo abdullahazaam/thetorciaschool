@@ -106,13 +106,13 @@ export default async function NewsDetailPage({ params }) {
           </h1>
 
           {article.imageUrl && (
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gray-100 shadow-md">
+            <div className="relative w-full aspect-[4/3] sm:aspect-video max-h-[550px] rounded-2xl overflow-hidden bg-slate-100/80 border border-gray-100 flex items-center justify-center shadow-md p-2">
               <Image
                 src={article.imageUrl}
                 alt={article.title}
                 fill
                 sizes="(max-width: 896px) 100vw, 896px"
-                className="object-cover object-center"
+                className="w-full h-full object-contain object-center"
                 priority
               />
             </div>

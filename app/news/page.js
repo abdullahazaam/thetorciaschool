@@ -81,14 +81,14 @@ export default async function NewsPage() {
                     href={`/news/${item._id}`}
                     className="group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] bg-white/95 backdrop-blur-xl border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl overflow-hidden flex flex-col h-full"
                   >
-                    <div className="relative w-full aspect-video md:aspect-video overflow-hidden">
+                    <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-slate-100/80 border-b border-gray-100 flex items-center justify-center">
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}
                           alt={item.title}
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                          className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500 ease-out p-1.5 sm:p-2"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">

@@ -29,15 +29,15 @@ export default function GalleryGrid({ limit }) {
             <div
               className="group relative bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] hover:-translate-y-2 transition-all duration-300 flex flex-col h-full"
             >
-            <div className="relative w-full aspect-video md:aspect-video overflow-hidden">
+            <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-slate-100/80 border-b border-gray-100 flex items-center justify-center">
               <Image
                 src={item.src}
                 alt={item.title}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
-                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500 ease-out p-1.5 sm:p-2"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex items-end p-5">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex items-end p-5 pointer-events-none">
                 <span className="text-xs font-semibold text-white flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-red-300" />
                   <span>The Torcia School • Nazimabad</span>

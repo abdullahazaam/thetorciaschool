@@ -21,7 +21,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-white/50 transition-all">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm transition-all">
       {/* Top Notification / Contact Bar */}
       <div className="bg-[#A01A22] text-white text-[10px] font-normal h-6 flex items-center px-4 sm:px-8 lg:px-12 overflow-hidden">
         <div className="max-w-[1600px] mx-auto w-full flex justify-between items-center leading-none">
@@ -125,7 +125,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-white/50 bg-white/90 backdrop-blur-md shadow-xl animate-in slide-in-from-top-4 duration-200">
+        <div className="lg:hidden border-t border-gray-200 bg-white shadow-xl animate-in slide-in-from-top-4 duration-200">
           <div className="px-4 pt-3 pb-6 space-y-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href;

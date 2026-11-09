@@ -6,12 +6,19 @@ import {
   MessageCircle,
   X,
   Send,
-  Sparkles,
   Phone,
   Bot,
   User,
-  ExternalLink,
+  Sparkles,
 } from 'lucide-react';
+
+const SUGGESTED_QUERIES = [
+  'Fee Structure',
+  'School Timings',
+  'Admission Criteria',
+  'Required Documents',
+  'STEM Programme',
+];
 
 export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +26,7 @@ export default function AIChatWidget() {
     {
       id: 'init-1',
       sender: 'assistant',
-      text: 'Hello! I am the Torcia Assistant. I am currently learning about our new admission policies. For urgent queries, please call 0342-2049976.',
+      text: "Assalam-o-Alaikum! Welcome to The Torcia School ('Growing Future Leaders'). How can I help you with our admissions, programs, fee structure, or timings today?",
       time: 'Just now',
     },
   ]);
@@ -35,13 +42,13 @@ export default function AIChatWidget() {
     if (isOpen) {
       scrollToBottom();
     }
-  }, [messages, isOpen]);
+  }, [messages, isOpen, isTyping]);
 
-  const handleSend = (e) => {
+  const handleSend = async (e, directText = null) => {
     e?.preventDefault();
-    if (!input.trim()) return;
+    const userText = (directText || input).trim();
+    if (!userText) return;
 
-    const userText = input.trim();
     const userMsg = {
       id: `user-${Date.now()}`,
       sender: 'user',
@@ -50,37 +57,51 @@ export default function AIChatWidget() {
     };
 
     setMessages((prev) => [...prev, userMsg]);
-    setInput('');
+    if (!directText) setInput('');
     setIsTyping(true);
 
-    // Contextual auto-reply
-    setTimeout(() => {
-      let botReply =
-        'Thank you for your question. For detailed admissions counseling or fee schedules, please submit our Online Inquiry form or contact our admissions desk at 0342-2049976.';
-      
-      const lower = userText.toLowerCase();
-      if (lower.includes('admission') || lower.includes('fee') || lower.includes('apply')) {
-        botReply =
-          'Admissions for the 2026-2027 academic session are currently open from Playgroup to Class V! You can submit an inquiry directly via our Admissions page or call 0342-2049976.';
-      } else if (lower.includes('timing') || lower.includes('hour') || lower.includes('time')) {
-        botReply =
-          'Our campus office timings are Monday to Saturday: 7:45 am – 2:00 pm (Friday: 7:45 am – 1:00 pm).';
-      } else if (lower.includes('address') || lower.includes('location') || lower.includes('where')) {
-        botReply =
-          'The Torcia School is located at Plot # 20/13 Block 5C, near Abbasi Shaheed Hospital, Nazimabad, Karachi.';
-      }
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userText,
+          history: messages.slice(-4),
+        }),
+      });
 
+      if (res.ok) {
+        const data = await res.json();
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `bot-${Date.now()}`,
+            sender: 'assistant',
+            text: data.reply,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
+      } else {
+        throw new Error('Server returned non-200');
+      }
+    } catch (err) {
+      console.error('Chat error:', err);
       setMessages((prev) => [
         ...prev,
         {
           id: `bot-${Date.now()}`,
           sender: 'assistant',
-          text: botReply,
+          text:
+            'Thank you for reaching out to **The Torcia School** (*"Growing Future Leaders"*).\n\n' +
+            '• **Fee Structure:** Admission: Rs. 15,000 | Annual: Rs. 4,000 | Monthly: Rs. 5,000\n' +
+            '• **Timings:** Pre-Primary (8:30 am–12:30 pm, Fri 12:00 noon) | Primary (7:45 am–1:30 pm, Fri 12:30 pm)\n\n' +
+            'For immediate admissions counseling, please call our campus desk at **0342-2049976**.',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
+    } finally {
       setIsTyping(false);
-    }, 700);
+    }
   };
 
   return (
@@ -93,7 +114,7 @@ export default function AIChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="w-[calc(100vw-2rem)] sm:w-96 max-h-[500px] sm:max-h-[540px] h-[440px] sm:h-[480px] bg-white/90 backdrop-blur-xl border border-gray-200 shadow-2xl rounded-3xl flex flex-col overflow-hidden mb-3 select-none"
+            className="w-[calc(100vw-2rem)] sm:w-96 max-h-[530px] sm:max-h-[570px] h-[470px] sm:h-[510px] bg-white/95 backdrop-blur-xl border border-gray-200 shadow-2xl rounded-3xl flex flex-col overflow-hidden mb-3 select-none"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-[#87131A] to-[#A01A22] text-white p-4 flex items-center justify-between shadow-sm">
@@ -106,7 +127,7 @@ export default function AIChatWidget() {
                     <h3 className="font-bold text-sm leading-tight text-white">Torcia Assistant</h3>
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   </div>
-                  <p className="text-[11px] text-white/80">Admissions & Campus Helper</p>
+                  <p className="text-[11px] text-white/85">The Torcia School • Growing Future Leaders</p>
                 </div>
               </div>
 
@@ -121,7 +142,7 @@ export default function AIChatWidget() {
             </div>
 
             {/* Quick Contact Notice Banner */}
-            <div className="bg-red-50/80 border-b border-red-100 px-4 py-2 flex items-center justify-between text-xs text-red-900">
+            <div className="bg-red-50/90 border-b border-red-100 px-4 py-2 flex items-center justify-between text-xs text-red-900">
               <span className="flex items-center gap-1 font-semibold text-[11px]">
                 <Phone className="w-3 h-3 text-[#A01A22]" /> 0342-2049976
               </span>
@@ -129,12 +150,12 @@ export default function AIChatWidget() {
                 href="tel:03422049976"
                 className="text-[11px] font-bold text-[#A01A22] hover:underline"
               >
-                Call Desk
+                Call Admissions Desk
               </a>
             </div>
 
             {/* Messages Body */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-gradient-to-b from-white/60 to-gray-50/60">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-gradient-to-b from-white/70 to-gray-50/70">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -149,7 +170,7 @@ export default function AIChatWidget() {
                   )}
 
                   <div
-                    className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm leading-relaxed shadow-sm ${
+                    className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm leading-relaxed shadow-sm ${
                       msg.sender === 'user'
                         ? 'bg-[#A01A22] text-white rounded-br-xs'
                         : 'bg-white/95 text-gray-800 border border-gray-100 rounded-bl-xs'
@@ -186,6 +207,21 @@ export default function AIChatWidget() {
               <div ref={messagesEndRef} />
             </div>
 
+            {/* Quick Suggestion Chips */}
+            <div className="px-3 py-1.5 bg-gray-50/90 border-t border-gray-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <Sparkles className="w-3 h-3 text-[#A01A22] shrink-0 ml-1" />
+              {SUGGESTED_QUERIES.map((query) => (
+                <button
+                  key={query}
+                  type="button"
+                  onClick={() => handleSend(null, query)}
+                  className="px-2.5 py-1 rounded-full bg-white border border-gray-200 hover:border-[#A01A22] hover:text-[#A01A22] text-[10px] font-medium text-gray-700 transition whitespace-nowrap shadow-2xs shrink-0"
+                >
+                  {query}
+                </button>
+              ))}
+            </div>
+
             {/* Input Bar */}
             <form
               onSubmit={handleSend}
@@ -195,7 +231,7 @@ export default function AIChatWidget() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about admissions, timings..."
+                placeholder="Ask about fees, timings, STEM..."
                 className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-xs sm:text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#A01A22]/40 focus:bg-white transition-all"
               />
               <button
