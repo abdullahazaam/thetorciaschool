@@ -176,7 +176,18 @@ export default function Footer() {
 
           {/* 3. Sub-footer bar with Social Icons & Legal */}
           <div className="pt-4 border-t border-red-900/50 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/80">
-            <p>© {currentYear} The Torcia School. All rights reserved.</p>
+            <div className="flex items-center gap-2">
+              <p>© {currentYear} The Torcia School. All rights reserved.</p>
+              <a
+                href="https://abdullahazaam-portfolio.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Developed by Abdullah Azaam"
+                className="text-[9px] text-[#A01A22] hover:text-white/80 transition-all duration-300 cursor-pointer select-none"
+              >
+                Developed by Abdullah Azaam
+              </a>
+            </div>
 
             <div className="flex items-center gap-5">
               <a href="#" className="hover:text-white transition-colors" aria-label="Facebook">

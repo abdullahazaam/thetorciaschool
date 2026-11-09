@@ -1,7 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { CheckCircle2, Phone, Mail, Clock, Send, AlertCircle, Download, FileText } from 'lucide-react';
+import {
+  CheckCircle2,
+  Phone,
+  Mail,
+  Clock,
+  Send,
+  AlertCircle,
+  Download,
+  FileText,
+  Loader2,
+  X,
+  ChevronDown,
+  HelpCircle,
+  BookOpen,
+  Sparkles,
+} from 'lucide-react';
 import AdmissionsPromo from '@/components/AdmissionsPromo';
 import MotionCard from '@/components/MotionCard';
 
@@ -17,6 +32,13 @@ export default function AdmissionsPage() {
 
   const [status, setStatus] = useState({ loading: false, success: false, error: '' });
   const [activeStep, setActiveStep] = useState(1);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [submittedStudentName, setSubmittedStudentName] = useState('');
+  const [openFaq, setOpenFaq] = useState(0);
+
+  const toggleFaq = (idx) => {
+    setOpenFaq((prev) => (prev === idx ? -1 : idx));
+  };
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -45,7 +67,9 @@ export default function AdmissionsPage() {
         throw new Error(data.error || 'Failed to submit admission inquiry');
       }
 
+      setSubmittedStudentName(formData.studentName);
       setStatus({ loading: false, success: true, error: '' });
+      setShowSuccessModal(true);
       setFormData({
         parentName: '',
         studentName: '',
@@ -408,10 +432,19 @@ export default function AdmissionsPage() {
                       type="submit"
                       disabled={status.loading}
                       onFocus={() => setActiveStep(3)}
-                      className="w-full py-3.5 sm:py-4 px-6 rounded-full bg-[#A01A22] hover:bg-red-800 active:scale-95 transition-all duration-300 hover:shadow-[0_10px_20px_rgba(220,38,38,0.2)] hover:-translate-y-1 text-white font-semibold text-sm shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
+                      className="w-full py-3.5 sm:py-4 px-6 rounded-full bg-[#A01A22] hover:bg-red-800 active:scale-95 transition-all duration-300 hover:shadow-[0_10px_20px_rgba(220,38,38,0.2)] hover:-translate-y-1 text-white font-semibold text-sm shadow-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                     >
-                      <Send className="w-4 h-4" />
-                      <span>{status.loading ? 'Submitting Inquiry...' : 'Submit Admission Inquiry'}</span>
+                      {status.loading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-white" />
+                          <span>Submitting Inquiry...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          <span>Submit Admission Inquiry</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>
@@ -419,102 +452,219 @@ export default function AdmissionsPage() {
             </MotionCard>
           </div>
 
-          {/* 3. Dedicated Admission Criteria, Required Documents & PDF Download Section */}
-          <MotionCard index={2} className="w-full mt-10 md:mt-14">
-            <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-6 sm:p-8 md:p-10 border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                {/* Left Column: Criteria & Documents */}
-                <div className="lg:col-span-7 space-y-6 text-left">
-                  <div>
-                    <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1">
-                      OFFLINE REGISTRATION
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight">
-                      Admission Criteria &amp; Required Documents
-                    </h2>
-                    <div className="w-14 h-1 bg-[#A01A22] rounded-full my-3"></div>
-                    <p className="text-gray-700 text-xs sm:text-sm leading-relaxed font-normal">
-                      Parents who prefer an offline paper submission may download the official application form, complete it at home, and present it directly to our campus admission desk alongside the required credentials.
-                    </p>
-                  </div>
-
-                  {/* Criteria & Documents Mini Grids */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Age Criteria */}
-                    <div className="bg-red-50/60 border border-red-100 rounded-xl p-4">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-[#A01A22] mb-3 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#A01A22]"></span>
-                        Admission Criteria
-                      </h3>
-                      <ul className="text-xs text-gray-800 space-y-2 font-medium">
-                        <li>• <strong>Playgroup:</strong> 2.5 years</li>
-                        <li>• <strong>Montessori:</strong> 3.5 to 5 years</li>
-                        <li>• <strong>Grade I:</strong> Minimum 5 years</li>
-                        <li>• <strong>Grade II:</strong> Minimum 6 years</li>
-                        <li>• <strong>Grade III:</strong> Minimum 7 years</li>
-                      </ul>
-                    </div>
-
-                    {/* Required Documents */}
-                    <div className="bg-gray-50 border border-gray-200/80 rounded-xl p-4">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-3 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-gray-600"></span>
-                        Required Documents
-                      </h3>
-                      <ul className="text-xs text-gray-800 space-y-2">
-                        <li className="flex items-start gap-1.5">
-                          <span className="text-[#A01A22] font-bold">✓</span>
-                          <span>Child's Nadra B-Form</span>
-                        </li>
-                        <li className="flex items-start gap-1.5">
-                          <span className="text-[#A01A22] font-bold">✓</span>
-                          <span>Passport-size photographs</span>
-                        </li>
-                        <li className="flex items-start gap-1.5">
-                          <span className="text-[#A01A22] font-bold">✓</span>
-                          <span>School leaving certificate (if transfer)</span>
-                        </li>
-                        <li className="flex items-start gap-1.5">
-                          <span className="text-[#A01A22] font-bold">✓</span>
-                          <span>Parent / Guardian CNIC copy</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column: Download Card & Button */}
-                <div className="lg:col-span-5 bg-slate-50 border border-gray-200/80 rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center space-y-4 shadow-sm">
-                  <div className="w-16 h-16 rounded-2xl bg-[#A01A22] text-white flex items-center justify-center shadow-xl shadow-red-900/20">
-                    <FileText className="w-8 h-8" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg sm:text-xl font-serif text-gray-900 tracking-tight">
-                      Official Admission Form (PDF)
-                    </h3>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Academic Session 2026–2027 • Standard Printable PDF
-                    </p>
-                  </div>
-
-                  <a
-                    href="/forms/The_Torcia_School_Admission_Form.pdf"
-                    download="The_Torcia_School_Admission_Form.pdf"
-                    className="w-full inline-flex items-center justify-center gap-2.5 py-4 px-6 rounded-full bg-[#A01A22] hover:bg-[#87131A] active:scale-95 text-white font-bold text-xs sm:text-sm tracking-wide shadow-xl hover:shadow-[0_12px_28px_rgba(160,26,34,0.35)] hover:-translate-y-1 transition-all duration-300 group"
-                  >
-                    <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-                    <span>Download Admission Form (PDF)</span>
-                  </a>
-
-                  <p className="text-[11px] text-gray-500 leading-relaxed max-w-xs">
-                    Click above to save the form directly to your device. Print, fill out, and bring to the admissions desk.
+        {/* 3. Dedicated Admission Criteria, Required Documents & PDF Download Section */}
+        <MotionCard index={1} className="w-full mt-6 md:mt-10">
+          <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-6 sm:p-8 md:p-10 border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              {/* Left Column: Criteria & Documents */}
+              <div className="lg:col-span-7 space-y-6 text-left">
+                <div>
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1">
+                    OFFLINE REGISTRATION
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight">
+                    Admission Criteria &amp; Required Documents
+                  </h2>
+                  <div className="w-14 h-1 bg-[#A01A22] rounded-full my-3"></div>
+                  <p className="text-gray-700 text-xs sm:text-sm leading-relaxed font-normal">
+                    Parents who prefer an offline paper submission may download the official application form, complete it at home, and present it directly to our campus admission desk alongside the required credentials.
                   </p>
                 </div>
+
+                {/* Criteria & Documents Mini Grids */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Age Criteria */}
+                  <div className="bg-red-50/60 border border-red-100 rounded-xl p-4">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#A01A22] mb-3 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-[#A01A22]"></span>
+                      Admission Criteria
+                    </h3>
+                    <ul className="text-xs text-gray-800 space-y-2 font-medium">
+                      <li>• <strong>Playgroup:</strong> 2.5 years</li>
+                      <li>• <strong>Montessori:</strong> 3.5 to 5 years</li>
+                      <li>• <strong>Grade I:</strong> Minimum 5 years</li>
+                      <li>• <strong>Grade II:</strong> Minimum 6 years</li>
+                      <li>• <strong>Grade III:</strong> Minimum 7 years</li>
+                    </ul>
+                  </div>
+
+                  {/* Required Documents */}
+                  <div className="bg-gray-50 border border-gray-200/80 rounded-xl p-4">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-3 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-gray-600"></span>
+                      Required Documents
+                    </h3>
+                    <ul className="text-xs text-gray-800 space-y-2">
+                      <li className="flex items-start gap-1.5">
+                        <span className="text-[#A01A22] font-bold">✓</span>
+                        <span>Child's Nadra B-Form</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <span className="text-[#A01A22] font-bold">✓</span>
+                        <span>Passport-size photographs</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <span className="text-[#A01A22] font-bold">✓</span>
+                        <span>School leaving certificate (if transfer)</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <span className="text-[#A01A22] font-bold">✓</span>
+                        <span>Parent / Guardian CNIC copy</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Download Card & Button */}
+              <div className="lg:col-span-5 bg-slate-50 border border-gray-200/80 rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center space-y-4 shadow-sm">
+                <div className="w-16 h-16 rounded-2xl bg-[#A01A22] text-white flex items-center justify-center shadow-xl shadow-red-900/20">
+                  <FileText className="w-8 h-8" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg sm:text-xl font-serif text-gray-900 tracking-tight">
+                    Official Admission Form (PDF)
+                  </h3>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Academic Session 2026–2027 • Standard Printable PDF
+                  </p>
+                </div>
+
+                <a
+                  href="/forms/The_Torcia_School_Admission_Form.pdf"
+                  download="The_Torcia_School_Admission_Form.pdf"
+                  className="w-full inline-flex items-center justify-center gap-2.5 py-4 px-6 rounded-full bg-[#A01A22] hover:bg-[#87131A] active:scale-95 text-white font-bold text-xs sm:text-sm tracking-wide shadow-xl hover:shadow-[0_12px_28px_rgba(160,26,34,0.35)] hover:-translate-y-1 transition-all duration-300 group"
+                >
+                  <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+                  <span>Download Admission Form (PDF)</span>
+                </a>
+
+                <p className="text-[11px] text-gray-500 leading-relaxed max-w-xs">
+                  Click above to save the form directly to your device. Print, fill out, and bring to the admissions desk.
+                </p>
               </div>
             </div>
-          </MotionCard>
-        </div>
+          </div>
+        </MotionCard>
+
+        {/* 4. Parent FAQ Accordion Section */}
+        <MotionCard index={2} className="w-full mt-10 md:mt-14 mb-4">
+          <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-6 sm:p-8 md:p-10 border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] transition-all duration-500">
+            <div className="max-w-3xl mb-8 text-left">
+              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1">
+                FREQUENTLY ASKED QUESTIONS
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight">
+                Parent Questions &amp; Admissions Guide
+              </h2>
+              <div className="w-14 h-1 bg-[#A01A22] rounded-full my-3"></div>
+              <p className="text-gray-700 text-xs sm:text-sm leading-relaxed font-normal">
+                Everything you need to know about age criteria, school timings, campus visits, and our curriculum.
+              </p>
+            </div>
+
+            <div className="space-y-3.5">
+              {[
+                {
+                  q: 'What are the age requirements across Playgroup, Montessori, and Primary grades?',
+                  a: 'Playgroup accepts children starting at 2.5 years. Montessori/Nursery caters to 3.5 to 5 years focusing on foundational sensory motor skills. Grade I requires a minimum age of 5 years, Grade II minimum 6 years, and Grade III minimum 7 years. Class IV & V require age-appropriate readiness evaluation.',
+                },
+                {
+                  q: 'What are the regular student timings and campus office hours?',
+                  a: 'Pre-Primary (Playgroup & Montessori) operates Monday through Thursday from 8:30 AM to 12:30 PM, and Friday until 12:00 Noon. Primary (Classes I to V) operates Monday through Thursday from 7:45 AM to 1:30 PM, and Friday until 12:30 PM. The Admissions Desk is open Monday to Saturday from 7:45 AM to 2:00 PM (Friday until 1:00 PM).',
+                },
+                {
+                  q: 'Can parents visit the campus for a guided tour before registration?',
+                  a: 'Yes, parents are warmly invited to visit our Nazimabad campus (Plot # 20/13 Block 5C, near Abbasi Shaheed Hospital) during working hours. You can meet our directress, explore our robotics lab, and tour the classrooms.',
+                },
+                {
+                  q: 'What distinguishes The Torcia School curriculum and STEM programme?',
+                  a: 'We combine rigorous Oxford/Cambridge-aligned primary academics with our flagship STEM & Robotics Programme (Coding, AI, and hands-on science kits), alongside a structured values-based moral foundation promoting discipline and leadership.',
+                },
+                {
+                  q: 'What documents must be submitted for admission confirmation?',
+                  a: "Parents are requested to submit: (1) Copy of the child's Nadra B-Form, (2) 4 passport-size photographs, (3) Copy of Parent/Guardian CNIC, and (4) Last school leaving certificate / previous report card for transfer students.",
+                },
+                {
+                  q: 'What is the fee structure for the 2026–2027 academic session?',
+                  a: 'The one-time Admission Fee is Rs. 15,000, Annual Charges are Rs. 4,000, and the Monthly Tuition Fee is Rs. 5,000. Special sibling concessions and merit considerations are reviewed on a case-by-case basis.',
+                },
+              ].map((faq, index) => (
+                <div
+                  key={faq.q}
+                  className="border border-gray-200/80 rounded-xl overflow-hidden transition-all duration-300 bg-white"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(index)}
+                    className="w-full py-4 px-4 sm:px-6 text-left flex items-center justify-between gap-3 font-semibold text-xs sm:text-sm md:text-base text-gray-900 hover:text-[#A01A22] transition-colors"
+                  >
+                    <span className="flex items-center gap-2.5 sm:gap-3">
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-50 text-[#A01A22] text-[10px] sm:text-xs font-bold flex items-center justify-center shrink-0">
+                        {index + 1}
+                      </span>
+                      <span>{faq.q}</span>
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-gray-500 transition-transform duration-300 shrink-0 ${
+                        openFaq === index ? 'rotate-180 text-[#A01A22]' : ''
+                      }`}
+                    />
+                  </button>
+                  {openFaq === index && (
+                    <div className="px-4 sm:px-6 pb-4 sm:pb-5 pt-1 text-gray-600 text-xs sm:text-sm border-t border-gray-100 bg-slate-50/60 leading-relaxed animate-in fade-in duration-200">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </MotionCard>
+
+        {/* Success Popup Modal */}
+        {showSuccessModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 text-center border-t-4 border-[#A01A22] animate-in zoom-in-95 duration-200">
+              <button
+                type="button"
+                onClick={() => setShowSuccessModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100 transition"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-emerald-100">
+                <CheckCircle2 className="w-9 h-9" />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold font-serif text-gray-900 mb-2">
+                Application Received!
+              </h3>
+              <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-6">
+                Thank you for applying to <strong>The Torcia School</strong>. We have successfully registered the admission inquiry{submittedStudentName ? ` for ${submittedStudentName}` : ''}. Our admission officer will reach out to you within 24–48 hours to arrange the campus review.
+              </p>
+              <div className="bg-slate-50 rounded-xl p-3.5 text-xs text-gray-700 mb-6 border border-gray-100 text-left space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <Clock className="w-4 h-4 text-[#A01A22] shrink-0" />
+                  <span>Admissions Desk: Mon–Sat 7:45 am – 2:00 pm</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <Phone className="w-4 h-4 text-[#A01A22] shrink-0" />
+                  <span>Campus Helpline: 0342-2049976</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full py-3 px-6 rounded-full bg-[#A01A22] hover:bg-[#87131A] active:scale-95 text-white font-bold text-xs sm:text-sm shadow-md transition-all duration-300"
+              >
+                Done &amp; Return
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+    </div>
   );
 }
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertCircle, Loader2, X } from 'lucide-react';
 import MotionCard from '@/components/MotionCard';
 
 export default function ContactPage() {
@@ -15,6 +15,7 @@ export default function ContactPage() {
   });
 
   const [status, setStatus] = useState({ loading: false, success: false, error: '' });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -43,6 +44,7 @@ export default function ContactPage() {
       }
 
       setStatus({ loading: false, success: true, error: '' });
+      setShowSuccessModal(true);
       setFormData({ name: '', phone: '', email: '', subject: 'General Inquiry', message: '' });
     } catch (err) {
       setStatus({
@@ -54,7 +56,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="w-full bg-transparent pt-8 pb-20 md:pt-12 md:pb-12">
+    <div className="w-full bg-slate-50 pt-8 pb-20 md:pt-12 md:pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 1. Header */}
         <div className="max-w-4xl mx-auto text-center space-y-3 mb-8 sm:mb-10">
@@ -252,10 +254,19 @@ export default function ContactPage() {
                       <button
                         type="submit"
                         disabled={status.loading}
-                        className="w-full py-3.5 sm:py-4 px-6 rounded-full bg-[#A01A22] hover:bg-red-800 text-white font-semibold text-sm shadow-xl active:scale-95 transition-all duration-300 hover:shadow-[0_10px_20px_rgba(220,38,38,0.2)] hover:-translate-y-1 flex items-center justify-center gap-2 disabled:opacity-50"
+                        className="w-full py-3.5 sm:py-4 px-6 rounded-full bg-[#A01A22] hover:bg-red-800 text-white font-semibold text-sm shadow-xl active:scale-95 transition-all duration-300 hover:shadow-[0_10px_20px_rgba(220,38,38,0.2)] hover:-translate-y-1 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                       >
-                        <Send className="w-4 h-4" />
-                        <span>{status.loading ? 'Sending Message...' : 'Send Message'}</span>
+                        {status.loading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin text-white" />
+                            <span>Sending Message...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4" />
+                            <span>Send Message</span>
+                          </>
+                        )}
                       </button>
                     </div>
                   </form>
@@ -264,6 +275,48 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
+
+        {/* Success Popup Modal */}
+        {showSuccessModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 text-center border-t-4 border-[#A01A22] animate-in zoom-in-95 duration-200">
+              <button
+                type="button"
+                onClick={() => setShowSuccessModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100 transition"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-emerald-100">
+                <CheckCircle2 className="w-9 h-9" />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold font-serif text-gray-900 mb-2">
+                Inquiry Received!
+              </h3>
+              <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-6">
+                Thank you for contacting <strong>The Torcia School</strong>. Your inquiry has been forwarded to our admissions desk, and our team will get back to you shortly.
+              </p>
+              <div className="bg-slate-50 rounded-xl p-3.5 text-xs text-gray-700 mb-6 border border-gray-100 text-left space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <Clock className="w-4 h-4 text-[#A01A22] shrink-0" />
+                  <span>Campus Hours: Mon–Sat 7:45 am – 2:00 pm</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <Phone className="w-4 h-4 text-[#A01A22] shrink-0" />
+                  <span>Direct Desk: 0342-2049976</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full py-3 px-6 rounded-full bg-[#A01A22] hover:bg-[#87131A] active:scale-95 text-white font-bold text-xs sm:text-sm shadow-md transition-all duration-300"
+              >
+                Close &amp; Return
+              </button>
+            </div>
+          </div>
+        )}
       </div>
   );
 }

@@ -22,6 +22,16 @@ export async function POST(req) {
       );
     }
 
+    // 0. Immediate High-Precision Conversational Greeting & Check-in Handler
+    const matchedGreeting = getKnowledgeResponse(userMessage);
+    const isGreeting = /^(salam|assalam|aoa|slm|hi|hello|hey|kaise|kese|how are you|how r u|kya hal|kya haal)/i.test(userMessage.trim());
+    if (matchedGreeting && isGreeting) {
+      return NextResponse.json({
+        reply: matchedGreeting,
+        source: 'knowledge-base-greeting',
+      });
+    }
+
     // 1. Check if Gemini API is configured
     const geminiKey = process.env.GEMINI_API_KEY;
     if (geminiKey) {
@@ -115,12 +125,14 @@ export async function POST(req) {
 
     // 4. Default Intelligent Fallback
     const defaultReply =
-      `Thank you for reaching out to **The Torcia School** (*"Growing Future Leaders"*).\n\n` +
-      `Here is a quick summary of our admissions & programs:\n` +
-      `• **Programs:** Early Years (Playgroup & Montessori with sensory activities), Primary (Grade I–V), and our flagship **STEM Programme** (Robotics, AI, Coding, IoT).\n` +
-      `• **Fee Structure:** Admission Fee: Rs. 15,000 | Annual Charges: Rs. 4,000 | Monthly Tuition: Rs. 5,000.\n` +
-      `• **School Timings:** Pre-Primary (8:30 am–12:30 pm, Fri 12:00 noon) | Primary (7:45 am–1:30 pm, Fri 12:30 pm).\n\n` +
-      `Would you like to know more about our **Admission Criteria**, **Required Documents**, or schedule a campus visit at our Nazimabad branch? You can also contact our desk directly at **0342-2049976**.`;
+      `Thank you for contacting **The Torcia School** (*"Growing Future Leaders"*).\n\n` +
+      `I would be happy to assist you! How can I help you and your child today? You can ask me about:\n\n` +
+      `• **Admissions & Age Criteria** (Playgroup to Grade V)\n` +
+      `• **Fee Structure** (Admission, Annual & Monthly fees)\n` +
+      `• **School Timings** (Pre-Primary & Primary schedules)\n` +
+      `• **Required Documents** for registration\n` +
+      `• **STEM & Robotics Curriculum**\n\n` +
+      `You can also reach our admissions desk directly at **0342-2049976** or visit our campus at **Plot # 20/13 Block 5C, Nazimabad, Karachi**.`;
 
     return NextResponse.json({
       reply: defaultReply,

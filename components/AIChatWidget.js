@@ -20,13 +20,153 @@ const SUGGESTED_QUERIES = [
   'STEM Programme',
 ];
 
+/**
+ * Formats chatbot messages:
+ * - Parses Markdown bold (**text**) and HTML <strong>/<b> into styled bold elements
+ * - Parses Markdown italic (*text*) and HTML <em>/<i> into styled italic elements
+ * - Parses bullet points (•, -, *) and numbered lists into clean aligned list rows
+ * - Eliminates raw asterisks while preserving readability and line breaks
+ */
+function FormattedMessage({ text, isUser }) {
+  if (!text) return null;
+
+  const lines = text.split('\n');
+
+  // Parses inline Markdown styles and HTML tags
+  const renderInline = (str) => {
+    if (!str) return null;
+
+    // Matches ***bold-italic***, **bold**, *italic*, <strong>, <b>, <em>, <i>
+    const regex = /(\*\*\*[^*]+?\*\*\*|\*\*[^*]+?\*\*|\*[^*]+?\*|<strong>.*?<\/strong>|<b>.*?<\/b>|<em>.*?<\/em>|<i>.*?<\/i>)/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+    let key = 0;
+
+    while ((match = regex.exec(str)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(str.substring(lastIndex, match.index));
+      }
+
+      const m = match[0];
+      if (m.startsWith('***') && m.endsWith('***')) {
+        parts.push(
+          <strong key={`bi-${key++}`} className="font-bold italic text-inherit">
+            {m.slice(3, -3)}
+          </strong>
+        );
+      } else if (m.startsWith('**') && m.endsWith('**')) {
+        parts.push(
+          <strong key={`b-${key++}`} className="font-bold text-inherit">
+            {m.slice(2, -2)}
+          </strong>
+        );
+      } else if (m.startsWith('*') && m.endsWith('*')) {
+        parts.push(
+          <em key={`i-${key++}`} className="italic text-inherit">
+            {m.slice(1, -1)}
+          </em>
+        );
+      } else if (m.startsWith('<strong>') && m.endsWith('</strong>')) {
+        parts.push(
+          <strong key={`sb-${key++}`} className="font-bold text-inherit">
+            {m.slice(8, -9)}
+          </strong>
+        );
+      } else if (m.startsWith('<b>') && m.endsWith('</b>')) {
+        parts.push(
+          <strong key={`b2-${key++}`} className="font-bold text-inherit">
+            {m.slice(3, -4)}
+          </strong>
+        );
+      } else if (m.startsWith('<em>') && m.endsWith('</em>')) {
+        parts.push(
+          <em key={`em-${key++}`} className="italic text-inherit">
+            {m.slice(4, -5)}
+          </em>
+        );
+      } else if (m.startsWith('<i>') && m.endsWith('</i>')) {
+        parts.push(
+          <em key={`i2-${key++}`} className="italic text-inherit">
+            {m.slice(3, -4)}
+          </em>
+        );
+      }
+
+      lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < str.length) {
+      parts.push(str.substring(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : str;
+  };
+
+  return (
+    <div className="space-y-1">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          return <div key={idx} className="h-1.5" />;
+        }
+
+        // Bullet item match
+        const bulletMatch = /^([•\-\*])\s+(.*)$/.exec(trimmed);
+        if (bulletMatch) {
+          return (
+            <div key={idx} className="flex items-start gap-1.5 my-0.5">
+              <span
+                className={`select-none font-bold shrink-0 leading-relaxed ${
+                  isUser ? 'text-white' : 'text-[#A01A22]'
+                }`}
+              >
+                •
+              </span>
+              <span className="flex-1 leading-relaxed">
+                {renderInline(bulletMatch[2])}
+              </span>
+            </div>
+          );
+        }
+
+        // Numbered list match
+        const numberMatch = /^(\d+[\.\)])\s+(.*)$/.exec(trimmed);
+        if (numberMatch) {
+          return (
+            <div key={idx} className="flex items-start gap-1.5 my-0.5">
+              <span
+                className={`select-none font-bold shrink-0 leading-relaxed ${
+                  isUser ? 'text-white/90' : 'text-[#A01A22]'
+                }`}
+              >
+                {numberMatch[1]}
+              </span>
+              <span className="flex-1 leading-relaxed">
+                {renderInline(numberMatch[2])}
+              </span>
+            </div>
+          );
+        }
+
+        return (
+          <p key={idx} className="leading-relaxed">
+            {renderInline(line)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 'init-1',
       sender: 'assistant',
-      text: "Assalam-o-Alaikum! Welcome to The Torcia School ('Growing Future Leaders'). How can I help you with our admissions, programs, fee structure, or timings today?",
+      text: "Assalam-o-Alaikum! Welcome to **The Torcia School** (*'Growing Future Leaders'*).\n\nHow can I help you with our admissions, programs, fee structure, or timings today?",
       time: 'Just now',
     },
   ]);
@@ -86,16 +226,20 @@ export default function AIChatWidget() {
       }
     } catch (err) {
       console.error('Chat error:', err);
+      const isGreeting = /^(salam|assalam|aoa|slm|hi|hello|hey|kaise|kese|how are you)/i.test(userText);
+      const fallbackText = isGreeting
+        ? 'Assalam-o-Alaikum! Welcome to **The Torcia School** (*"Growing Future Leaders"*).\n\nHow can I help you today? Feel free to ask about our **Admissions**, **Fee Structure**, **School Timings**, or **STEM Programs**, or call us directly at **0342-2049976**.'
+        : 'Thank you for reaching out to **The Torcia School** (*"Growing Future Leaders"*).\n\n' +
+          '• **Fee Structure:** Admission: Rs. 15,000 | Annual: Rs. 4,000 | Monthly: Rs. 5,000\n' +
+          '• **Timings:** Pre-Primary (8:30 am–12:30 pm, Fri 12:00 noon) | Primary (7:45 am–1:30 pm, Fri 12:30 pm)\n\n' +
+          'For immediate admissions counseling, please call our campus desk at **0342-2049976**.';
+
       setMessages((prev) => [
         ...prev,
         {
           id: `bot-${Date.now()}`,
           sender: 'assistant',
-          text:
-            'Thank you for reaching out to **The Torcia School** (*"Growing Future Leaders"*).\n\n' +
-            '• **Fee Structure:** Admission: Rs. 15,000 | Annual: Rs. 4,000 | Monthly: Rs. 5,000\n' +
-            '• **Timings:** Pre-Primary (8:30 am–12:30 pm, Fri 12:00 noon) | Primary (7:45 am–1:30 pm, Fri 12:30 pm)\n\n' +
-            'For immediate admissions counseling, please call our campus desk at **0342-2049976**.',
+          text: fallbackText,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
@@ -176,7 +320,7 @@ export default function AIChatWidget() {
                         : 'bg-white/95 text-gray-800 border border-gray-100 rounded-bl-xs'
                     }`}
                   >
-                    <p className="whitespace-pre-wrap">{msg.text}</p>
+                    <FormattedMessage text={msg.text} isUser={msg.sender === 'user'} />
                     <span
                       className={`block text-[10px] mt-1 text-right ${
                         msg.sender === 'user' ? 'text-white/70' : 'text-gray-400'

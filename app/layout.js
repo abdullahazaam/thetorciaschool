@@ -25,23 +25,53 @@ export const viewport = {
 };
 
 export const metadata = {
-  applicationName: 'Torcia School',
-  title: 'The Torcia School | Growing Future Leaders in Karachi',
-  description: 'Admissions open from Playgroup to Class V. The Torcia School in Nazimabad offers quality education in a disciplined, values-based environment.',
-  keywords: ['The Torcia School', 'Best school in Nazimabad', 'Primary school Karachi', 'Montessori admissions', 'Top school near Abbasi Shaheed Hospital'],
+  metadataBase: new URL('https://thetorciaschool.edu.pk'),
+  applicationName: 'The Torcia School',
+  title: {
+    default: 'The Torcia School | Nazimabad Karachi - Admissions Open 2026–2027',
+    template: '%s | The Torcia School Nazimabad',
+  },
+  description: 'The Torcia School in Nazimabad, Karachi provides values-based education, sensory Montessori early years development, primary learning (Playgroup to Class V), and a modern STEM & Robotics curriculum.',
+  keywords: [
+    'The Torcia School',
+    'The Torcia School Nazimabad Karachi',
+    'Top primary school in Nazimabad',
+    'Best Montessori in Karachi',
+    'School admissions open 2026 Karachi',
+    'STEM and Robotics school Karachi',
+    'School near Abbasi Shaheed Hospital Nazimabad',
+    'Quality education Karachi',
+  ],
   manifest: '/manifest.json',
+  alternates: {
+    canonical: '/',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Torcia School',
+    title: 'The Torcia School',
   },
   openGraph: {
-    title: 'The Torcia School | Admissions Open',
-    description: 'Nurturing curiosity, strong moral values, and academic excellence. Book a campus tour today.',
-    url: 'https://www.thetorciaschool.edu.pk',
+    title: 'The Torcia School | Nazimabad Karachi - Admissions Open 2026–2027',
+    description: 'Empowering Young Minds for a Brighter Tomorrow. Values-based education, sensory Montessori discovery, and a flagship STEM curriculum in Nazimabad, Karachi.',
+    url: 'https://thetorciaschool.edu.pk',
     siteName: 'The Torcia School',
     locale: 'en_PK',
     type: 'website',
+    images: [
+      {
+        url: '/images/about/admissions-promo-16x9.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'The Torcia School Campus in Nazimabad Karachi',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'The Torcia School | Nazimabad Karachi - Admissions Open',
+    description: 'Nurturing curiosity, strong moral values, and academic excellence. Admissions open for Playgroup through Class V in Nazimabad, Karachi.',
+    images: ['/images/about/admissions-promo-16x9.jpg'],
   },
 };
 
