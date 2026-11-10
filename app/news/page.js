@@ -134,21 +134,21 @@ export default async function NewsPage() {
         )}
 
           {/* 3. Academic Calendar & Upcoming Events Section */}
-          <section className="mt-10 sm:mt-12">
-            <div className="max-w-4xl mx-auto text-center space-y-1.5 sm:space-y-2 mb-5 sm:mb-6">
-              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1">
+          <section className="mt-14 sm:mt-16 lg:mt-20 pt-12 sm:pt-14 border-t border-red-100/40">
+            <div className="max-w-4xl mx-auto text-center space-y-3 mb-8 sm:mb-10">
+              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1.5">
                 CAMPUS SCHEDULE &amp; EVENTS
               </span>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+              <h2 className="text-3xl md:text-4xl lg:text-[40px] font-extrabold text-gray-900 tracking-tight leading-tight">
                 Academic Calendar &amp; Upcoming Events
               </h2>
-              <div className="w-12 h-1 bg-[#A01A22] rounded-full mx-auto my-2"></div>
-              <p className="text-gray-900 max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed font-normal">
+              <div className="w-14 h-1 bg-[#A01A22] rounded-full mx-auto my-3"></div>
+              <p className="text-gray-900 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-normal">
                 Explore scheduled campus milestones, parent-teacher conferences, student exhibitions, and holiday observances at The Torcia School.
               </p>
             </div>
 
-            <MotionCard index={0} className="w-full max-w-5xl mx-auto">
+            <MotionCard index={0} className="w-full">
               <EventCalendar />
             </MotionCard>
           </section>

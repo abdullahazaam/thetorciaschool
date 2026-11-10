@@ -1,6 +1,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { CheckCircle, Lightbulb, Monitor, Shield, ArrowRight, Check } from 'lucide-react';
+import {
+  CheckCircle,
+  Lightbulb,
+  Monitor,
+  Shield,
+  ArrowRight,
+  Check,
+  GraduationCap,
+  Brain,
+  Users,
+} from 'lucide-react';
 import AdmissionsPromo from '@/components/AdmissionsPromo';
 import MotionCard from '@/components/MotionCard';
 
@@ -44,25 +54,47 @@ const classLevels = [
   },
 ];
 
-import connectToDatabase from '@/lib/mongodb';
-import Faculty from '@/models/Faculty';
-
-export const dynamic = 'force-dynamic';
-
-async function getFacultyMembers() {
-  try {
-    if (process.env.MONGODB_URI) {
-      await connectToDatabase();
-      const members = await Faculty.find({ isActive: true }).sort({ createdAt: -1 }).lean();
-      if (members && members.length > 0) {
-        return JSON.parse(JSON.stringify(members));
-      }
-    }
-  } catch (err) {
-    console.error('Error loading faculty for academics page:', err);
-  }
-  return [];
-}
+const teachingStandards = [
+  {
+    title: 'Rigorous Hiring Process',
+    badge: 'ECE & Montessori Certified',
+    subtitle: 'High Qualification Standards',
+    desc: 'Our multi-tier recruitment evaluates pedagogical depth, emotional maturity, subject mastery, and practical classroom management.',
+    icon: GraduationCap,
+    highlights: [
+      'ECE & Montessori certified educators for early years',
+      'Subject specialists for Primary & STEM disciplines',
+      'Thorough background checks & cognitive aptitude evaluations',
+      'Demonstrated micro-teaching & communication assessments',
+    ],
+  },
+  {
+    title: 'Continuous Professional Development',
+    badge: 'Monthly In-Service Training',
+    subtitle: 'Child Psychology Workshops',
+    desc: 'Teachers undergo structured monthly workshops led by child psychology experts, STEM specialists, and experienced teacher trainers.',
+    icon: Brain,
+    highlights: [
+      'Monthly training in contemporary child psychology',
+      'Hands-on Robotics, Coding & AI instructional training',
+      'Positive discipline frameworks & emotional safety protocols',
+      'Continuous curriculum alignment & peer observation reviews',
+    ],
+  },
+  {
+    title: 'Low Student-Teacher Ratio',
+    badge: 'Ensuring Individual Care',
+    subtitle: 'Personalized Learning Focus',
+    desc: 'We keep classroom groups intentionally balanced to ensure personalized learning paths, close observation, and daily mentorship.',
+    icon: Users,
+    highlights: [
+      'Small group learning ensuring no child is left behind',
+      'Personalized tracking in reading, phonics & numeracy',
+      'Safe, expressive atmosphere encouraging self-confidence',
+      'Regular one-on-one parent feedback & progress reporting',
+    ],
+  },
+];
 
 const methodologies = [
   {
@@ -87,9 +119,7 @@ const methodologies = [
   },
 ];
 
-export default async function AcademicsPage() {
-  const facultyList = await getFacultyMembers();
-
+export default function AcademicsPage() {
   return (
     <div className="w-full bg-transparent">
       {/* 1. Header & Class Levels */}
@@ -172,72 +202,98 @@ export default async function AcademicsPage() {
         </div>
       </section>
 
-      {/* 3. Real Faculty Standards Showcase */}
+      {/* 3. Teaching Standards & Educator Criteria Showcase */}
       <section className="bg-transparent py-12 lg:py-16 border-b border-red-100/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left max-w-2xl mb-8">
+          <div className="max-w-3xl mb-10 text-left">
             <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#A01A22] block mb-1.5">
-              TEACHING QUALITY
+              EDUCATOR CRITERIA &amp; QUALITY
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-[40px] font-extrabold text-gray-900 tracking-tight leading-tight">
-              Faculty &amp; Infrastructure Standards
+              Our Teaching Standards &amp; Educator Criteria
             </h2>
             <div className="w-14 h-1 bg-[#A01A22] rounded-full my-3"></div>
             <p className="text-gray-900 text-sm sm:text-base leading-relaxed">
-              Internationally certified educators creating warm, productive, interactive classroom communities.
+              At The Torcia School, our educators are passionate mentors certified in modern early-years pedagogy and STEM-integrated education. Rather than fluctuating staff rosters, we uphold uncompromising institutional standards across every classroom.
             </p>
           </div>
 
-          {facultyList.length === 0 ? (
-            <div className="bg-white/95 backdrop-blur-xl border border-dashed border-red-200 rounded-2xl p-8 sm:p-12 text-center text-gray-500 shadow-md max-w-lg mx-auto space-y-3">
-              <div className="w-12 h-12 rounded-full bg-red-50 text-[#A01A22] flex items-center justify-center mx-auto">
-                <CheckCircle className="w-6 h-6" />
-              </div>
-              <h3 className="font-bold text-gray-900 text-base">New updates coming soon</h3>
-              <p className="text-xs text-gray-600 leading-relaxed">
-                Our certified faculty directory and educator credentials are being updated. Check back soon for the latest profiles!
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-              {facultyList.map((f, idx) => (
-                <MotionCard key={f._id} index={idx} className="h-full">
-                  <div
-                    className="bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500 flex flex-col h-full"
-                  >
-                    <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-slate-100/80 border-b border-gray-100 flex items-center justify-center">
-                      {f.imageUrl ? (
-                        <Image
-                          src={f.imageUrl}
-                          alt={f.name}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 25vw"
-                          className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500 ease-out p-1 sm:p-1.5"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[#A01A22]">
-                          <span className="text-xs font-bold text-center px-2">{f.name}</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+            {teachingStandards.map((pillar, idx) => {
+              const Icon = pillar.icon;
+              return (
+                <MotionCard key={pillar.title} index={idx} className="h-full">
+                  <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 sm:p-8 border-t-4 border-red-700 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(160,26,34,0.15)] transition-all duration-500 flex flex-col justify-between h-full">
+                    <div>
+                      {/* Top icon and badge */}
+                      <div className="flex items-center justify-between gap-3 mb-5">
+                        <div className="w-12 h-12 rounded-xl bg-red-50 text-[#A01A22] flex items-center justify-center shadow-sm">
+                          <Icon className="w-6 h-6 stroke-[2]" />
                         </div>
-                      )}
-                      <span className="absolute bottom-2 left-2 md:bottom-2.5 md:left-2.5 bg-[#A01A22] text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow truncate max-w-[85%]">
-                        {f.designation}
-                      </span>
+                        <span className="inline-block text-[10px] sm:text-[11px] font-bold text-[#A01A22] bg-red-50/90 border border-red-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                          {pillar.badge}
+                        </span>
+                      </div>
+
+                      <h3 className="font-bold text-lg sm:text-xl text-gray-900 tracking-tight mb-2">
+                        {pillar.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-700 leading-relaxed font-normal mb-5">
+                        {pillar.desc}
+                      </p>
+
+                      <div className="pt-4 border-t border-gray-100">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-[#A01A22] mb-3">
+                          Key Institutional Standards:
+                        </h4>
+                        <ul className="space-y-2.5">
+                          {pillar.highlights.map((item) => (
+                            <li key={item} className="flex items-start gap-2.5 text-xs sm:text-sm text-gray-700">
+                              <div className="w-4 h-4 rounded-full bg-red-50 text-[#A01A22] flex items-center justify-center shrink-0 mt-0.5">
+                                <Check className="w-3 h-3 stroke-[3]" />
+                              </div>
+                              <span className="font-medium leading-relaxed">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
-                    <div className="p-3 md:p-6 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-xs sm:text-sm md:text-base font-bold text-gray-900 tracking-tight mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-none">
-                          {f.name}
-                        </h3>
-                        <p className="text-[11px] sm:text-xs text-gray-700 leading-relaxed font-normal line-clamp-2 sm:line-clamp-3">
-                          {f.degree} {f.experience ? `• ${f.experience}` : ''}
-                        </p>
+
+                    <div className="pt-5 mt-6 border-t border-gray-100">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-gray-600">
+                        <CheckCircle className="w-4 h-4 text-[#A01A22]" />
+                        <span>{pillar.subtitle}</span>
                       </div>
                     </div>
                   </div>
                 </MotionCard>
-              ))}
+              );
+            })}
+          </div>
+
+          {/* Classroom Observation Advisory Banner */}
+          <div className="mt-8 sm:mt-10 bg-white/90 backdrop-blur-md rounded-2xl p-5 sm:p-6 border border-red-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 text-left">
+              <div className="w-10 h-10 rounded-full bg-[#A01A22] text-white flex items-center justify-center shrink-0 shadow-sm">
+                <CheckCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm sm:text-base font-bold text-gray-900">
+                  Observe Our Classrooms in Action
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-600 font-normal">
+                  We invite prospective parents to tour our campus, meet academic coordinators, and experience our teaching environment firsthand.
+                </p>
+              </div>
             </div>
-          )}
+            <Link
+              href="/admissions"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#A01A22] text-white hover:bg-red-800 active:scale-95 transition-all shadow-md shrink-0"
+            >
+              <span>Schedule Campus Visit</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
