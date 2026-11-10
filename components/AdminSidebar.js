@@ -9,6 +9,8 @@ import {
   GraduationCap,
   MessageSquare,
   Users,
+  Calendar,
+  HelpCircle,
   ExternalLink,
   LogOut,
   ShieldCheck,
@@ -21,7 +23,9 @@ const navItems = [
   { name: 'Admissions', href: '/admin/admissions', icon: GraduationCap },
   { name: 'Contact Inquiries', href: '/admin/contact', icon: MessageSquare },
   { name: 'News & Announcements', href: '/admin/news', icon: Newspaper },
-  { name: 'Faculty Management', href: '/admin/faculty', icon: Users },
+  { name: 'Faculty & Standards', href: '/admin/faculty', icon: Users },
+  { name: 'Calendar & Events', href: '/admin/events', icon: Calendar },
+  { name: 'Parent FAQ Editor', href: '/admin/faqs', icon: HelpCircle },
 ];
 
 export default function AdminSidebar({ onLogout }) {

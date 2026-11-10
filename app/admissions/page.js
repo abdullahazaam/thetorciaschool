@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   CheckCircle2,
   Phone,
@@ -35,6 +35,54 @@ export default function AdmissionsPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [submittedStudentName, setSubmittedStudentName] = useState('');
   const [openFaq, setOpenFaq] = useState(0);
+  const [faqs, setFaqs] = useState([
+    {
+      q: 'What are the age requirements across Playgroup, Montessori, and Primary grades?',
+      a: 'Playgroup accepts children starting at 2.5 years. Montessori/Nursery caters to 3.5 to 5 years focusing on foundational sensory motor skills. Grade I requires a minimum age of 5 years, Grade II minimum 6 years, and Grade III minimum 7 years. Class IV & V require age-appropriate readiness evaluation.',
+    },
+    {
+      q: 'What are the regular student timings and campus office hours?',
+      a: 'Pre-Primary (Playgroup & Montessori) operates Monday through Thursday from 8:30 AM to 12:30 PM, and Friday until 12:00 Noon. Primary (Classes I to V) operates Monday through Thursday from 7:45 AM to 1:30 PM, and Friday until 12:30 PM. The Admissions Desk is open Monday to Saturday from 7:45 AM to 2:00 PM (Friday until 1:00 PM).',
+    },
+    {
+      q: 'Can parents visit the campus for a guided tour before registration?',
+      a: 'Yes, parents are warmly invited to visit our Nazimabad campus (Plot # 20/13 Block 5C, near Abbasi Shaheed Hospital) during working hours. You can meet our directress, explore our robotics lab, and tour the classrooms.',
+    },
+    {
+      q: 'What distinguishes The Torcia School curriculum and STEM programme?',
+      a: 'We combine rigorous Oxford/Cambridge-aligned primary academics with our flagship STEM & Robotics Programme (Coding, AI, and hands-on science kits), alongside a structured values-based moral foundation promoting discipline and leadership.',
+    },
+    {
+      q: 'What documents must be submitted for admission confirmation?',
+      a: "Parents are requested to submit: (1) Copy of the child's Nadra B-Form, (2) 4 passport-size photographs, (3) Copy of Parent/Guardian CNIC, and (4) Last school leaving certificate / previous report card for transfer students.",
+    },
+    {
+      q: 'What is the fee structure for the 2026–2027 academic session?',
+      a: 'The one-time Admission Fee is Rs. 15,000, Annual Charges are Rs. 4,000, and the Monthly Tuition Fee is Rs. 5,000. Special sibling concessions and merit considerations are reviewed on a case-by-case basis.',
+    },
+  ]);
+
+  useEffect(() => {
+    async function loadFaqs() {
+      try {
+        const res = await fetch('/api/faqs');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+            setFaqs(
+              json.data.map((item) => ({
+                q: item.question,
+                a: item.answer,
+              }))
+            );
+          }
+        }
+      } catch (err) {
+        console.error('Error loading dynamic FAQs:', err);
+      }
+    }
+    loadFaqs();
+  }, []);
 
   const toggleFaq = (idx) => {
     setOpenFaq((prev) => (prev === idx ? -1 : idx));
@@ -564,32 +612,7 @@ export default function AdmissionsPage() {
             </div>
 
             <div className="space-y-3.5">
-              {[
-                {
-                  q: 'What are the age requirements across Playgroup, Montessori, and Primary grades?',
-                  a: 'Playgroup accepts children starting at 2.5 years. Montessori/Nursery caters to 3.5 to 5 years focusing on foundational sensory motor skills. Grade I requires a minimum age of 5 years, Grade II minimum 6 years, and Grade III minimum 7 years. Class IV & V require age-appropriate readiness evaluation.',
-                },
-                {
-                  q: 'What are the regular student timings and campus office hours?',
-                  a: 'Pre-Primary (Playgroup & Montessori) operates Monday through Thursday from 8:30 AM to 12:30 PM, and Friday until 12:00 Noon. Primary (Classes I to V) operates Monday through Thursday from 7:45 AM to 1:30 PM, and Friday until 12:30 PM. The Admissions Desk is open Monday to Saturday from 7:45 AM to 2:00 PM (Friday until 1:00 PM).',
-                },
-                {
-                  q: 'Can parents visit the campus for a guided tour before registration?',
-                  a: 'Yes, parents are warmly invited to visit our Nazimabad campus (Plot # 20/13 Block 5C, near Abbasi Shaheed Hospital) during working hours. You can meet our directress, explore our robotics lab, and tour the classrooms.',
-                },
-                {
-                  q: 'What distinguishes The Torcia School curriculum and STEM programme?',
-                  a: 'We combine rigorous Oxford/Cambridge-aligned primary academics with our flagship STEM & Robotics Programme (Coding, AI, and hands-on science kits), alongside a structured values-based moral foundation promoting discipline and leadership.',
-                },
-                {
-                  q: 'What documents must be submitted for admission confirmation?',
-                  a: "Parents are requested to submit: (1) Copy of the child's Nadra B-Form, (2) 4 passport-size photographs, (3) Copy of Parent/Guardian CNIC, and (4) Last school leaving certificate / previous report card for transfer students.",
-                },
-                {
-                  q: 'What is the fee structure for the 2026–2027 academic session?',
-                  a: 'The one-time Admission Fee is Rs. 15,000, Annual Charges are Rs. 4,000, and the Monthly Tuition Fee is Rs. 5,000. Special sibling concessions and merit considerations are reviewed on a case-by-case basis.',
-                },
-              ].map((faq, index) => (
+              {faqs.map((faq, index) => (
                 <div
                   key={faq.q}
                   className="border border-gray-200/80 rounded-xl overflow-hidden transition-all duration-300 bg-white"

@@ -17,6 +17,16 @@ const FacultySchema = new mongoose.Schema(
       required: [true, 'Please provide the job designation or role'],
       trim: true,
     },
+    department: {
+      type: String,
+      default: 'Early Years & Primary',
+      trim: true,
+    },
+    standards: {
+      type: String,
+      default: 'ECE & Montessori Certified',
+      trim: true,
+    },
     imageUrl: {
       type: String,
       default: '',

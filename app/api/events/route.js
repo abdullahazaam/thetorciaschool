@@ -9,8 +9,13 @@ export async function GET(request) {
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
     const includeInactive = searchParams.get('all') === 'true';
+    const filterType = searchParams.get('type');
 
     const query = includeInactive ? {} : { isActive: true };
+    if (filterType) {
+      query.type = filterType;
+    }
+
     const events = await Event.find(query).sort({ date: -1 }).lean();
     return NextResponse.json({ success: true, count: events.length, data: events });
   } catch (error) {
@@ -27,7 +32,17 @@ export async function POST(request) {
     await connectToDatabase();
     const body = await request.json();
 
-    const { title, description, date, type, imageUrl, isActive } = body;
+    const {
+      title,
+      description,
+      date,
+      type,
+      category,
+      time,
+      location,
+      imageUrl,
+      isActive,
+    } = body;
 
     if (!title || !description) {
       return NextResponse.json(
@@ -37,10 +52,13 @@ export async function POST(request) {
     }
 
     const event = await Event.create({
-      title,
-      description,
+      title: title.trim(),
+      description: description.trim(),
       date: date ? new Date(date) : new Date(),
-      type: type || 'news',
+      type: type || 'event',
+      category: category ? category.trim() : 'Academic',
+      time: time ? time.trim() : '8:30 AM – 1:30 PM',
+      location: location ? location.trim() : 'Main Campus, Nazimabad',
       imageUrl: imageUrl || '',
       isActive: isActive !== undefined ? isActive : true,
     });

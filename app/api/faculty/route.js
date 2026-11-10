@@ -27,7 +27,16 @@ export async function POST(request) {
     await connectToDatabase();
     const body = await request.json();
 
-    const { name, degree, designation, imageUrl, experience, isActive } = body;
+    const {
+      name,
+      degree,
+      designation,
+      department,
+      standards,
+      imageUrl,
+      experience,
+      isActive,
+    } = body;
 
     if (!name || !degree || !designation) {
       return NextResponse.json(
@@ -40,6 +49,8 @@ export async function POST(request) {
       name: name.trim(),
       degree: degree.trim(),
       designation: designation.trim(),
+      department: department ? department.trim() : 'Early Years & Primary',
+      standards: standards ? standards.trim() : 'ECE & Montessori Certified',
       imageUrl: imageUrl || '',
       experience: experience ? experience.trim() : '',
       isActive: isActive !== undefined ? isActive : true,

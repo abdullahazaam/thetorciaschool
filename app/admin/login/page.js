@@ -35,8 +35,8 @@ function LoginForm() {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      router.push(redirectTarget);
-      router.refresh();
+      // Hard reload into admin dashboard to guarantee fresh session verification
+      window.location.href = redirectTarget;
     } catch (err) {
       setError(err.message || 'Incorrect password. Access denied.');
     } finally {

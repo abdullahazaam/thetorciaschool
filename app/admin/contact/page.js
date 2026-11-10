@@ -423,8 +423,8 @@ export default function AdminContactPage() {
 
       {/* Message Detail Modal */}
       {selectedMessage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border-t-4 border-[#A01A22] border-x border-b border-gray-200 space-y-5 animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-red-50 text-[#A01A22] rounded-xl">

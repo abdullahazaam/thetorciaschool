@@ -9,10 +9,13 @@ export async function PUT(request, { params }) {
     const body = await request.json();
 
     const updateData = {};
-    if (body.title !== undefined) updateData.title = body.title;
-    if (body.description !== undefined) updateData.description = body.description;
+    if (body.title !== undefined) updateData.title = body.title.trim();
+    if (body.description !== undefined) updateData.description = body.description.trim();
     if (body.date !== undefined) updateData.date = new Date(body.date);
     if (body.type !== undefined) updateData.type = body.type;
+    if (body.category !== undefined) updateData.category = body.category.trim();
+    if (body.time !== undefined) updateData.time = body.time.trim();
+    if (body.location !== undefined) updateData.location = body.location.trim();
     if (body.imageUrl !== undefined) updateData.imageUrl = body.imageUrl;
     if (body.isActive !== undefined) updateData.isActive = body.isActive;
 

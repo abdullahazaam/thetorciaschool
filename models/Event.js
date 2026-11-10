@@ -20,7 +20,22 @@ const EventSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: ['news', 'event'],
-      default: 'news',
+      default: 'event',
+    },
+    category: {
+      type: String,
+      default: 'Academic',
+      trim: true,
+    },
+    time: {
+      type: String,
+      default: '8:30 AM – 1:30 PM',
+      trim: true,
+    },
+    location: {
+      type: String,
+      default: 'Main Campus, Nazimabad',
+      trim: true,
     },
     imageUrl: {
       type: String,

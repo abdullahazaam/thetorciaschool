@@ -13,10 +13,11 @@ export default function AdminLayoutClient({ children }) {
   const handleLogout = async () => {
     try {
       await fetch('/api/admin/logout', { method: 'POST' });
-      router.push('/admin/login');
-      router.refresh();
     } catch (e) {
-      console.error(e);
+      console.error('Logout error:', e);
+    } finally {
+      // Force hard reload to wipe all client state and cached data
+      window.location.href = '/admin/login';
     }
   };
 

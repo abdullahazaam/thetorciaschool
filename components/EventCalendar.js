@@ -246,9 +246,9 @@ export default function EventCalendar() {
                 month: d.getMonth(),
                 day: d.getDate(),
                 title: evt.title,
-                category: evt.type === 'event' ? 'Campus Event' : 'Campus News',
-                time: 'Scheduled Event',
-                location: 'Torcia Campus',
+                category: evt.category || (evt.type === 'event' ? 'Campus Event' : 'Campus News'),
+                time: evt.time || 'Scheduled Event',
+                location: evt.location || 'Torcia Campus',
                 description: evt.description,
               };
             });

@@ -8,6 +8,8 @@ import {
   Mail,
   GraduationCap,
   MessageSquare,
+  Calendar,
+  HelpCircle,
 } from 'lucide-react';
 import connectToDatabase from '@/lib/mongodb';
 import News from '@/models/News';
@@ -261,6 +263,42 @@ export default async function AdminDashboardPage() {
                       Contact Desk
                     </h3>
                     <p className="text-xs text-gray-500">Manage contact inquiries and messages</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#A01A22] transition" />
+              </Link>
+
+              <Link
+                href="/admin/events"
+                className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-red-100 hover:bg-red-50/50 transition-all duration-200 group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-red-50 text-red-600 group-hover:bg-[#A01A22] group-hover:text-white transition">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900 group-hover:text-[#A01A22] transition">
+                      Calendar &amp; Events
+                    </h3>
+                    <p className="text-xs text-gray-500">Schedule dates on live calendar</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#A01A22] transition" />
+              </Link>
+
+              <Link
+                href="/admin/faqs"
+                className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-red-100 hover:bg-red-50/50 transition-all duration-200 group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-red-50 text-red-600 group-hover:bg-[#A01A22] group-hover:text-white transition">
+                    <HelpCircle className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900 group-hover:text-[#A01A22] transition">
+                      Parent FAQ Editor
+                    </h3>
+                    <p className="text-xs text-gray-500">Update questions &amp; answers</p>
                   </div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#A01A22] transition" />

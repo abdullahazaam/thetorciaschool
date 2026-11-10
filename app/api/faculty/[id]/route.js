@@ -12,6 +12,8 @@ export async function PUT(request, { params }) {
     if (body.name !== undefined) updateData.name = body.name.trim();
     if (body.degree !== undefined) updateData.degree = body.degree.trim();
     if (body.designation !== undefined) updateData.designation = body.designation.trim();
+    if (body.department !== undefined) updateData.department = body.department.trim();
+    if (body.standards !== undefined) updateData.standards = body.standards.trim();
     if (body.imageUrl !== undefined) updateData.imageUrl = body.imageUrl;
     if (body.experience !== undefined) updateData.experience = body.experience.trim();
     if (body.isActive !== undefined) updateData.isActive = body.isActive;
